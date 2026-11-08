@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthSession } from "@/lib/auth";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
@@ -47,15 +47,10 @@ export async function POST(request: Request) {
       },
     });
 
-    // Paksa bersihkan cache halaman publik agar mitra baru langsung muncul
     try {
-      revalidateTag("home");
-      revalidateTag("partners");
       revalidatePath("/", "layout");
       revalidatePath("/partners", "page");
-    } catch (err) {
-      console.warn("Revalidation warning:", err);
-    }
+    } catch {}
 
     return NextResponse.json({
       success: true,
