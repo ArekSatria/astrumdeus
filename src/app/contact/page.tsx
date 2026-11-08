@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { getGlobalSettings } from "@/lib/api/client";
+import { getGlobalSettings, getCompanyProfile } from "@/lib/api/client";
 import { ContactView } from "@/components/sections/ContactView";
 
 export const metadata: Metadata = {
@@ -9,8 +9,18 @@ export const metadata: Metadata = {
     "Hubungi manajemen PT Adre Gemilang Jaya untuk proposal sponsorship, kemitraan komersial, dan undangan turnamen resmi.",
 };
 
-export default async function ContactPage() {
-  const settings = await getGlobalSettings();
+export const dynamic = "force-dynamic";
 
-  return <ContactView contactEmail={settings.contactQuick.partnershipEmail} />;
+export default async function ContactPage() {
+  const [settings, company] = await Promise.all([
+    getGlobalSettings(),
+    getCompanyProfile(),
+  ]);
+
+  const email =
+    company?.contact?.partnershipEmail ||
+    company?.contact?.businessEmail ||
+    settings.contactQuick.partnershipEmail;
+
+  return <ContactView contactEmail={email} />;
 }

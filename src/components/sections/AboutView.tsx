@@ -19,6 +19,8 @@ function resolveLocalized(
 
 interface AboutViewProps {
   company?: {
+    companyName?: string | null;
+    aboutHtml?: string | null;
     vision?: string | null;
     missions?: any;
     officeAddress?: string | null;
@@ -30,7 +32,9 @@ export function AboutView({ company }: AboutViewProps = {}) {
   const { locale, t } = useLanguage();
 
   const visionText =
-    locale === "id" && company?.vision ? company.vision : t.aboutPage.visionText;
+    company?.vision && company.vision.trim().length > 0
+      ? company.vision
+      : t.aboutPage.visionText;
 
   const missionsList =
     Array.isArray(company?.missions) && company.missions.length > 0
@@ -56,8 +60,14 @@ export function AboutView({ company }: AboutViewProps = {}) {
     Array.isArray(company?.milestones) && company.milestones.length > 0
       ? company.milestones.map((m: any) => ({
           year: m.year,
-          title: typeof m.title === "object" && m.title !== null ? m.title[locale] || m.title["id"] : m.title,
-          description: typeof m.description === "object" && m.description !== null ? m.description[locale] || m.description["id"] : m.description,
+          title:
+            typeof m.title === "object" && m.title !== null
+              ? m.title[locale] || m.title["id"]
+              : m.title,
+          description:
+            typeof m.description === "object" && m.description !== null
+              ? m.description[locale] || m.description["id"]
+              : m.description,
         }))
       : Array.isArray(company?.milestones) && company.milestones.length === 0
       ? []
@@ -67,16 +77,35 @@ export function AboutView({ company }: AboutViewProps = {}) {
           description: resolveLocalized(item.description, locale),
         }));
 
+  const officesList =
+    company?.officeAddress && company.officeAddress.trim().length > 0
+      ? [
+          {
+            city: company.companyName || "Kantor Operasional",
+            address: company.officeAddress,
+          },
+        ]
+      : CORPORATE_OFFICES.map((office) => ({
+          city: resolveLocalized(office.city, locale),
+          address: resolveLocalized(office.address, locale),
+        }));
+
   return (
     <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
-      {/* Header Halaman (Tanpa Subjudul) */}
-      <div className="border-b border-white/10 pb-8">
+      {/* Header Halaman & Deskripsi Perusahaan dari CMS */}
+      <div className="border-b border-white/10 pb-8 space-y-4">
         <h1 className="font-display text-3xl font-bold tracking-tight text-foreground uppercase sm:text-5xl">
           {t.aboutPage.title}
         </h1>
+        {company?.aboutHtml && company.aboutHtml.trim().length > 0 && (
+          <div
+            className="prose prose-invert max-w-4xl text-sm sm:text-base leading-relaxed text-slate-300"
+            dangerouslySetInnerHTML={{ __html: company.aboutHtml }}
+          />
+        )}
       </div>
 
-      {/* Seksi Visi & Misi (Teks Gold Diperbesar Tanpa Judul Visi/Misi Perusahaan) */}
+      {/* Seksi Visi & Misi */}
       <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* Card VISI */}
         <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-surface p-8 sm:p-10 lg:col-span-5">
@@ -127,7 +156,7 @@ export function AboutView({ company }: AboutViewProps = {}) {
         </div>
       </section>
 
-      {/* Seksi Perjalanan Kami (Tanpa Subjudul) */}
+      {/* Seksi Perjalanan Kami */}
       <section className="space-y-6">
         <SectionHeading title={t.aboutPage.milestonesHeading} />
 
@@ -159,22 +188,22 @@ export function AboutView({ company }: AboutViewProps = {}) {
         )}
       </section>
 
-      {/* Seksi Lokasi Operasional*/}
+      {/* Seksi Lokasi Operasional */}
       <section className="space-y-6">
         <SectionHeading title={t.aboutPage.officesHeading} />
 
         <div className="grid grid-cols-1 gap-6">
-          {CORPORATE_OFFICES.map((office, index) => (
+          {officesList.map((office, index) => (
             <div
-              key={office.city.id || index}
+              key={office.city + index}
               className="rounded-2xl border border-white/10 bg-surface p-6 sm:p-8"
             >
               <div className="space-y-2">
                 <h3 className="font-display text-xl font-bold text-brand uppercase sm:text-2xl">
-                  {resolveLocalized(office.city, locale)}
+                  {office.city}
                 </h3>
                 <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                  {resolveLocalized(office.address, locale)}
+                  {office.address}
                 </p>
               </div>
             </div>

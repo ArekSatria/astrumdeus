@@ -7,6 +7,8 @@ import { FloatingGlassNavbar } from "@/components/layout/FloatingGlassNavbar";
 import { ObsidianFooter } from "@/components/layout/ObsidianFooter";
 import { PublicLayoutShell } from "@/components/layout/PublicLayoutShell";
 
+export const dynamic = "force-dynamic";
+
 const oswald = Oswald({
   subsets: ["latin"],
   weight: ["600", "700"],

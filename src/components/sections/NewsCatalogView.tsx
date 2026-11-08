@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { mockNewsCatalog } from "@/lib/api/mock-data";
@@ -26,22 +27,10 @@ export function NewsCatalogView({
 
   const payload = data ?? initialData ?? catalog ?? mockNewsCatalog;
 
-  const categories = useMemo(
-    () =>
-      payload.categories.filter(
-        (cat) =>
-          cat.slug !== "corporate" && cat.name.toLowerCase() !== "korporasi",
-      ),
-    [payload.categories],
-  );
+  const categories = useMemo(() => payload.categories || [], [payload.categories]);
 
   const filteredArticles = useMemo(() => {
-    const validItems = payload.items.filter(
-      (item) =>
-        item.category.slug !== "corporate" &&
-        item.category.name.toLowerCase() !== "korporasi",
-    );
-
+    const validItems = payload.items || [];
     const byCategory =
       activeCategory === "ALL"
         ? validItems
@@ -52,8 +41,9 @@ export function NewsCatalogView({
 
   const translateCategoryLabel = (slug: string, fallbackName: string) => {
     if (locale === "id") return fallbackName;
-    if (slug === "tournament") return "Tournament";
-    if (slug === "announcement") return "Announcement";
+    if (slug === "tournament" || slug === "hasil-turnamen") return "Tournament";
+    if (slug === "announcement" || slug === "pengumuman") return "Announcement";
+    if (slug === "corporate" || slug === "korporasi") return "Corporate";
     return fallbackName;
   };
 
@@ -66,7 +56,7 @@ export function NewsCatalogView({
 
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-4 py-12 sm:px-6 lg:px-8">
-      {/* Header Halaman & Filter Kategori (Tanpa Subjudul) */}
+      {/* Header Halaman & Filter Kategori */}
       <div className="flex flex-col justify-between gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-center">
         <h1 className="font-display text-3xl font-bold tracking-tight text-foreground uppercase sm:text-5xl">
           {t.newsPage.title}
@@ -107,7 +97,7 @@ export function NewsCatalogView({
         </div>
       </div>
 
-      {/* Grid Artikel Berita (Tanpa Menit Baca) */}
+      {/* Grid Artikel Berita */}
       {filteredArticles.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-surface p-12 text-center text-sm text-slate-300">
           {t.newsPage.emptyState}
@@ -118,29 +108,46 @@ export function NewsCatalogView({
             <Link
               key={article.id}
               href={`/news/${article.slug}`}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-surface p-6 transition-colors hover:border-brand sm:p-8"
+              className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-surface transition-colors hover:border-brand"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-2 text-xs text-slate-300">
-                  <span className="inline-block rounded-md border border-brand/40 bg-brand/15 px-3 py-1 font-mono font-bold text-brand uppercase">
-                    {article.category.name}
-                  </span>
-                  <span className="font-mono">
-                    {formatDate(article.publishedAt)}
-                  </span>
+              <div>
+                {article.coverImageUrl && (
+                  <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/10 bg-background">
+                    <Image
+                      src={article.coverImageUrl}
+                      alt={article.coverImageAlt || article.title}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-4 p-6 sm:p-8">
+                  <div className="flex items-center justify-between gap-2 text-xs text-slate-300">
+                    <span className="inline-block rounded-md border border-brand/40 bg-brand/15 px-3 py-1 font-mono font-bold text-brand uppercase">
+                      {article.category.name}
+                    </span>
+                    <span className="font-mono">
+                      {formatDate(article.publishedAt)}
+                    </span>
+                  </div>
+
+                  <h2 className="font-display text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-brand">
+                    {article.title}
+                  </h2>
+
+                  <p className="line-clamp-3 text-sm leading-relaxed text-slate-300">
+                    {article.excerpt}
+                  </p>
                 </div>
-
-                <h2 className="font-display text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-brand">
-                  {article.title}
-                </h2>
-
-                <p className="line-clamp-3 text-sm leading-relaxed text-slate-300">
-                  {article.excerpt}
-                </p>
               </div>
 
-              <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-4 text-xs font-bold text-brand uppercase">
-                <span>{t.newsPage.readMore}</span>
+              <div className="px-6 pb-6 sm:px-8 sm:pb-8">
+                <div className="flex items-center justify-between border-t border-white/10 pt-4 text-xs font-bold text-brand uppercase">
+                  <span>{t.newsPage.readMore}</span>
+                </div>
               </div>
             </Link>
           ))}
