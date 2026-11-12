@@ -34,7 +34,6 @@ export function BrandLogo({
         />
       );
     }
-
     return (
       <Image
         src={resolvedSrc}
@@ -81,6 +80,7 @@ export function PartnerLogoGraphic({
         fill
         unoptimized
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
+        // Menggunakan object-cover agar gambar (beserta background aslinya) benar-benar memenuhi seluruh layout card
         className={cn("object-cover object-center", className)}
         onError={() => setImgError(true)}
       />
@@ -90,7 +90,7 @@ export function PartnerLogoGraphic({
   return (
     <div
       className={cn(
-        "flex h-full w-full items-center justify-center bg-surface p-4 text-center font-display text-lg font-bold text-foreground uppercase",
+        "flex h-full w-full items-center justify-center bg-zinc-900/50 p-4 text-center font-display text-sm font-bold text-slate-500 uppercase transition-colors group-hover:text-brand",
         className,
       )}
       aria-label={name || partnerId}

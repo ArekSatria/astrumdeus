@@ -25,15 +25,12 @@ function stripHtmlTags(text: string): string {
 export function HomeBentoView({ data }: HomeBentoViewProps) {
   const { locale, t } = useLanguage();
 
-  // Hanya tampilkan indikator jika ada pertandingan yang sedang LIVE (Poin 4)
   const liveMatch =
     data.nextMatch && data.nextMatch.status === "LIVE" ? data.nextMatch : null;
-
   const completedMatches = data.recentResults || [];
   const localizedNews = data.latestNews.map((item) =>
     translateArticleContent(item, locale),
   );
-
   const partnersList =
     data.partnersStrip && data.partnersStrip.length > 0
       ? data.partnersStrip
@@ -48,7 +45,7 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
 
   return (
     <div className="space-y-20 pb-24">
-      {/* BAR INDIKATOR LIVE (Hanya muncul apabila sedang ada pertandingan LIVE) */}
+      {/* BAR INDIKATOR LIVE */}
       {liveMatch && (
         <div className="w-full border-b border-brand/30 bg-brand text-background">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 text-xs font-bold uppercase sm:px-6 lg:px-8">
@@ -71,7 +68,7 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
         </div>
       )}
 
-      {/* 1. FOTO TIM UTAMA FULL-BLEED MINIMALIS (Poin 1) */}
+      {/* 1. FOTO TIM UTAMA FULL-BLEED */}
       <section className="relative w-full overflow-hidden border-b border-white/5 bg-background">
         <div className="relative aspect-[16/9] w-full sm:aspect-[21/9] lg:aspect-[24/9]">
           <Image
@@ -84,16 +81,15 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
             sizes="100vw"
             className="object-cover object-center"
           />
-          {/* Gradasi halus agar menyatu dan tidak kaku */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/15 to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-background/50 to-transparent" />
         </div>
       </section>
 
       <div className="mx-auto max-w-7xl space-y-20 px-4 sm:px-6 lg:px-8">
-        {/* URUTAN 1: HASIL PERTANDINGAN (Poin 4 & 5 — Gaya Baris Minimalis) */}
+        {/* URUTAN 1: HASIL PERTANDINGAN */}
         <section className="space-y-6">
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between gap-4 border-b border-white/15 pb-4">
             <SectionHeading title={t.home.resultsTitle} />
             <Link
               href="/matches"
@@ -104,11 +100,11 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
           </div>
 
           {completedMatches.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-surface/60 p-8 text-center text-sm text-slate-400">
+            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-8 text-center text-sm text-slate-400">
               {t.matchesPage.emptyState}
             </div>
           ) : (
-            <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-surface/70">
+            <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-zinc-900/60">
               {completedMatches.map((match) => {
                 const placement = match.resultBattleRoyale?.placement;
                 const totalPoints = match.resultBattleRoyale?.totalPoints;
@@ -120,7 +116,6 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                     className="flex flex-col justify-between gap-4 px-5 py-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:px-6 sm:py-5"
                   >
                     <div className="flex items-center gap-5">
-                      {/* Angka Peringkat Minimalis di Sisi Kiri */}
                       <div
                         className={cn(
                           "flex h-11 w-11 shrink-0 items-center justify-center border-l-2 font-display text-2xl font-black",
@@ -131,7 +126,6 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                       >
                         {placement ? `#${placement}` : "-"}
                       </div>
-
                       <div className="space-y-1">
                         <h3 className="font-display text-base font-bold tracking-wide text-foreground uppercase sm:text-lg">
                           {match.tournamentName}
@@ -147,8 +141,6 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                         </div>
                       </div>
                     </div>
-
-                    {/* Statistik Poin & WWCD Minimalis di Sisi Kanan */}
                     <div className="flex items-center gap-6 pl-16 sm:pl-0">
                       {totalPoints !== undefined && (
                         <div className="text-left sm:text-right">
@@ -178,63 +170,53 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
           )}
         </section>
 
-        {/* URUTAN 2: DIVISI GAME (Poin 2 & 5) */}
+        {/* URUTAN 2: DIVISI GAME */}
         <section className="space-y-6">
-          <div className="border-b border-white/10 pb-4">
+          <div className="border-b border-white/15 pb-4">
             <SectionHeading title={t.home.divisionTitle} />
           </div>
 
           {data.activeDivisions && data.activeDivisions.length > 0 ? (
-            <div
-              className={cn(
-                "grid gap-6",
-                data.activeDivisions.length > 1
-                  ? "grid-cols-1 md:grid-cols-2"
-                  : "grid-cols-1",
-              )}
-            >
-              {data.activeDivisions.map((division) => (
+            <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
+              {data.activeDivisions.map((division, idx) => (
                 <Link
                   key={division.id}
                   href={`/teams/${division.slug}`}
-                  className="group relative block aspect-[2/1] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-colors hover:border-brand/60"
+                  aria-label={`Lihat roster ${division.name}`}
+                  className="group relative flex w-full max-w-[460px] flex-auto items-center gap-6 rounded-2xl border border-white/10 bg-zinc-900/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand/60 hover:bg-zinc-800/40 hover:shadow-[0_0_20px_-10px] hover:shadow-brand/20 active:scale-[0.99] motion-reduce:animate-none motion-reduce:transform-none motion-reduce:transition-none animate-in fade-in slide-in-from-bottom-4 sm:w-[360px] sm:p-8 min-h-[160px] sm:min-h-[200px] lg:min-h-[230px]"
+                  style={{
+                    animationDelay: `${idx * 50}ms`,
+                    animationFillMode: "both",
+                  }}
                 >
-                  <div className="pointer-events-none absolute inset-0">
-                    <Image
-                      src={
-                        division.bannerImageUrl || "/images/pubg-logo-bg.svg"
-                      }
-                      alt={division.name}
-                      fill
-                      unoptimized
-                      sizes="(max-width: 1280px) 100vw, 640px"
-                      className="object-cover object-center opacity-75 transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+                  <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-4 transition-colors duration-300 group-hover:border-brand/30 group-hover:bg-brand/10 sm:h-32 sm:w-32">
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={
+                          division.bannerImageUrl || "/images/pubg-logo-bg.svg"
+                        }
+                        alt={`Logo ${division.name}`}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 128px) 100vw, 128px"
+                        className="object-contain opacity-70 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none"
+                      />
+                    </div>
                   </div>
 
-                  <div className="relative z-10 flex h-full w-full flex-col justify-end p-6 sm:p-8">
-                    <div className="flex items-end justify-between gap-4">
-                      <div className="space-y-1.5">
-                        {division.shortCode && (
-                          <span className="inline-block font-mono text-xs font-bold tracking-widest text-brand uppercase">
-                            {division.shortCode}
-                          </span>
-                        )}
-                        <h3 className="font-display text-3xl font-black tracking-tight text-foreground uppercase transition-colors group-hover:text-brand sm:text-5xl">
-                          {division.name}
-                        </h3>
-                      </div>
-                      <span className="text-xs font-bold tracking-wider text-slate-300 uppercase transition-colors group-hover:text-brand">
-                        {t.home.exploreDivisionBtn} &rarr;
-                      </span>
-                    </div>
+                  <div className="flex flex-col justify-center space-y-2">
+                    <h3 className="font-display text-2xl font-bold leading-tight text-white uppercase transition-colors duration-300 group-hover:text-brand sm:text-3xl">
+                      {division.name}
+                    </h3>
+                    <span className="font-mono text-xs font-bold tracking-widest text-brand uppercase sm:text-sm">
+                      {division.shortCode || "DIV"}
+                    </span>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-surface/60 p-10 text-center text-sm text-slate-400">
+            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-10 text-center text-sm text-slate-400">
               {locale === "id"
                 ? "Belum ada divisi game yang aktif."
                 : "No active game divisions."}
@@ -242,18 +224,22 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
           )}
         </section>
 
-        {/* URUTAN 3: MITRA RESMI (Poin 5 & 7 — Langsung Klik ke Website Mitra) */}
+        {/* URUTAN 3: MITRA RESMI (SMART FLEX WRAP) */}
         <section className="space-y-6">
-          <div className="border-b border-white/10 pb-4">
+          <div className="border-b border-white/15 pb-4">
             <SectionHeading title={t.home.partnersSectionTitle} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {/* UBAH: Layout grid mitra diubah menjadi flex-wrap justify-center agar merespons dinamis ketika data berkurang atau bertambah */}
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-5 lg:gap-6">
             {partnersList.map((partner) => {
               const targetUrl = partner.websiteUrl || "/partners";
               const isExternal =
                 targetUrl.startsWith("http://") ||
                 targetUrl.startsWith("https://");
+
+              const wrapperClass =
+                "group relative flex flex-auto items-center justify-center aspect-square w-[calc(50%-0.5rem)] max-w-[170px] sm:w-[calc(33.33%-1rem)] sm:max-w-[220px] lg:w-[calc(20%-1.2rem)] lg:max-w-[240px] overflow-hidden rounded-2xl border border-white/10 bg-background transition-all duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_0_30px_-10px] hover:shadow-brand/30 active:scale-[0.99]";
 
               return isExternal ? (
                 <a
@@ -262,13 +248,13 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={partner.name}
-                  className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-all duration-300 hover:border-brand/60"
+                  className={wrapperClass}
                 >
                   <PartnerLogoGraphic
                     partnerId={partner.id}
                     name={partner.name}
                     logoUrl={partner.logoUrl}
-                    className="transition-transform duration-500 group-hover:scale-105"
+                    className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
                   />
                 </a>
               ) : (
@@ -276,13 +262,13 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                   key={partner.id}
                   href={targetUrl}
                   aria-label={partner.name}
-                  className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-all duration-300 hover:border-brand/60"
+                  className={wrapperClass}
                 >
                   <PartnerLogoGraphic
                     partnerId={partner.id}
                     name={partner.name}
                     logoUrl={partner.logoUrl}
-                    className="transition-transform duration-500 group-hover:scale-105"
+                    className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
                   />
                 </Link>
               );
@@ -290,9 +276,9 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
           </div>
         </section>
 
-        {/* URUTAN 4: BERITA (Poin 3 & 5) */}
+        {/* URUTAN 4: BERITA */}
         <section className="space-y-6">
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between gap-4 border-b border-white/15 pb-4">
             <SectionHeading title={t.home.newsTitle} />
             <Link
               href="/news"
@@ -303,7 +289,7 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
           </div>
 
           {localizedNews.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-surface/60 p-8 text-center text-sm text-slate-400">
+            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-8 text-center text-sm text-slate-400">
               {t.newsPage.emptyState}
             </div>
           ) : (
@@ -312,18 +298,18 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                 <Link
                   key={article.id}
                   href={`/news/${article.slug}`}
-                  className="group flex flex-col justify-between rounded-xl border border-white/10 bg-surface/70 p-6 transition-colors hover:border-brand/60"
+                  className="group flex flex-col justify-between rounded-xl border border-white/10 bg-zinc-900/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_0_30px_-10px] hover:shadow-brand/30 active:scale-[0.99] motion-reduce:transform-none motion-reduce:transition-none"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span className="font-mono font-bold text-brand uppercase">
+                      <span className="inline-block rounded border border-brand/30 bg-brand/10 px-2 py-0.5 font-mono font-bold text-brand uppercase">
                         {article.category.name}
                       </span>
                       <span className="font-mono">
                         {formatDate(article.publishedAt)}
                       </span>
                     </div>
-                    <h3 className="font-display text-lg font-bold tracking-wide text-foreground transition-colors group-hover:text-brand">
+                    <h3 className="font-display text-lg font-bold tracking-wide text-white transition-colors group-hover:text-brand">
                       {article.title}
                     </h3>
                     <p className="line-clamp-2 text-sm leading-relaxed text-slate-400">

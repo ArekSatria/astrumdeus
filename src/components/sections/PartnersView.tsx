@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { CORPORATE_PARTNERS_DATA } from "@/lib/utils/corporate-helpers";
 import { PartnerLogoGraphic } from "@/components/ui/BrandElements";
-import { cn } from "@/lib/utils/cn";
 
 interface PartnerDisplayItem {
   id: string;
@@ -37,9 +36,9 @@ export function PartnersView({ initialPartners }: PartnersViewProps) {
         </h1>
       </div>
 
-      {/* Grid Mitra Resmi (Seluruh kartu dapat diklik) */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {partners.map((partner) => {
+      {/* Grid Mitra Resmi (SMART FLEX WRAP) */}
+      <div className="flex flex-wrap justify-center gap-6">
+        {partners.map((partner, idx) => {
           const desc =
             typeof partner.description === "object" &&
             partner.description !== null
@@ -60,11 +59,16 @@ export function PartnersView({ initialPartners }: PartnersViewProps) {
             <Wrapper
               key={partner.id}
               {...wrapperProps}
-              className="group flex flex-col justify-start rounded-xl border border-white/10 bg-surface/70 p-6 transition-colors hover:border-brand/60 sm:p-8"
+              /* Menggunakan w-full dengan flex-auto dan max-w-[420px] agar kartu mengisi grid dengan rapi & memusat jika ganjil */
+              className="group flex flex-col justify-start flex-auto w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[420px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60 transition-all duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_0_30px_-10px] hover:shadow-brand/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-[0.99] motion-reduce:animate-none motion-reduce:transform-none motion-reduce:transition-none animate-in fade-in slide-in-from-bottom-4"
+              style={{
+                animationDelay: `${idx * 50}ms`,
+                animationFillMode: "both",
+              }}
               aria-label={partner.name}
             >
-              {/* Kontainer Logo Mitra Persegi */}
-              <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-background">
+              {/* Kontainer Logo Mitra */}
+              <div className="relative aspect-square w-full border-b border-white/5 bg-background overflow-hidden">
                 <PartnerLogoGraphic
                   partnerId={partner.id}
                   name={partner.name}
@@ -74,7 +78,7 @@ export function PartnersView({ initialPartners }: PartnersViewProps) {
               </div>
 
               {/* Nama & Deskripsi Mitra */}
-              <div className="mt-6 space-y-2">
+              <div className="p-6 sm:p-8 space-y-2">
                 <h2 className="font-display text-xl font-bold tracking-wide text-foreground transition-colors group-hover:text-brand sm:text-2xl">
                   {partner.name}
                 </h2>
