@@ -1,7 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getActiveDivisions, getDivisionBySlug } from "@/lib/api/client";
+import {
+  getActiveDivisions,
+  getDivisionBySlug,
+  getMatchesData,
+} from "@/lib/api/client";
 import { DivisionDetailView } from "@/components/sections/DivisionDetailView";
 
 interface DivisionPageProps {
@@ -23,15 +27,15 @@ export async function generateMetadata({
 
   if (!division) {
     return {
-      title: "Divisi Tidak Ditemukan",
+      title: "Division Not Found",
     };
   }
 
   return {
-    title: `Divisi ${division.name} — Roster & Prestasi`,
+    title: `${division.name} — Roster & Achievements`,
     description:
       division.description ||
-      `Daftar pemain inti, staf pelatih, dan prestasi divisi ${division.name} PT Adre Gemilang Jaya.`,
+      `Official roster and match achievements of ${division.name} division at PT Adre Gemilang Jaya.`,
   };
 }
 
@@ -41,11 +45,16 @@ export default async function DivisionDetailPage({
   params,
 }: DivisionPageProps) {
   const { slug } = await params;
-  const division = await getDivisionBySlug(slug);
+  const [division, matchesPayload] = await Promise.all([
+    getDivisionBySlug(slug),
+    getMatchesData(),
+  ]);
 
   if (!division) {
     notFound();
   }
 
-  return <DivisionDetailView division={division} />;
+  return (
+    <DivisionDetailView division={division} matches={matchesPayload.items} />
+  );
 }

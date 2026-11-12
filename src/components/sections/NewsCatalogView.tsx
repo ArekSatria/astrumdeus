@@ -17,6 +17,10 @@ interface NewsCatalogViewProps {
   catalog?: NewsCatalogData;
 }
 
+function stripHtmlTags(text: string): string {
+  return text.replace(/<[^>]*>/g, "").trim();
+}
+
 export function NewsCatalogView({
   data,
   initialData,
@@ -26,8 +30,10 @@ export function NewsCatalogView({
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
 
   const payload = data ?? initialData ?? catalog ?? mockNewsCatalog;
-
-  const categories = useMemo(() => payload.categories || [], [payload.categories]);
+  const categories = useMemo(
+    () => payload.categories || [],
+    [payload.categories],
+  );
 
   const filteredArticles = useMemo(() => {
     const validItems = payload.items || [];
@@ -41,7 +47,12 @@ export function NewsCatalogView({
 
   const translateCategoryLabel = (slug: string, fallbackName: string) => {
     if (locale === "id") return fallbackName;
-    if (slug === "tournament" || slug === "hasil-turnamen") return "Tournament";
+    if (
+      slug === "tournament" ||
+      slug === "hasil-turnamen" ||
+      slug === "turnamen"
+    )
+      return "Tournament";
     if (slug === "announcement" || slug === "pengumuman") return "Announcement";
     if (slug === "corporate" || slug === "korporasi") return "Corporate";
     return fallbackName;
@@ -67,10 +78,10 @@ export function NewsCatalogView({
             type="button"
             onClick={() => setActiveCategory("ALL")}
             className={cn(
-              "rounded-xl px-4 py-2.5 text-xs font-bold uppercase transition-colors",
+              "rounded-lg px-4 py-2 text-xs font-bold uppercase transition-colors",
               activeCategory === "ALL"
                 ? "bg-brand text-background"
-                : "border border-white/10 bg-surface text-slate-300 hover:border-brand hover:text-foreground",
+                : "border border-white/10 bg-surface text-slate-300 hover:border-brand/60 hover:text-foreground",
             )}
           >
             {t.newsPage.filterAllCategories}
@@ -84,10 +95,10 @@ export function NewsCatalogView({
                 type="button"
                 onClick={() => setActiveCategory(cat.slug)}
                 className={cn(
-                  "rounded-xl px-4 py-2.5 text-xs font-bold uppercase transition-colors",
+                  "rounded-lg px-4 py-2 text-xs font-bold uppercase transition-colors",
                   isActive
                     ? "bg-brand text-background"
-                    : "border border-white/10 bg-surface text-slate-300 hover:border-brand hover:text-foreground",
+                    : "border border-white/10 bg-surface text-slate-300 hover:border-brand/60 hover:text-foreground",
                 )}
               >
                 {translateCategoryLabel(cat.slug, cat.name)}
@@ -97,9 +108,9 @@ export function NewsCatalogView({
         </div>
       </div>
 
-      {/* Grid Artikel Berita */}
+      {/* Grid Artikel Berita Minimalis */}
       {filteredArticles.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-surface p-12 text-center text-sm text-slate-300">
+        <div className="rounded-xl border border-white/10 bg-surface/60 p-12 text-center text-sm text-slate-400">
           {t.newsPage.emptyState}
         </div>
       ) : (
@@ -108,7 +119,7 @@ export function NewsCatalogView({
             <Link
               key={article.id}
               href={`/news/${article.slug}`}
-              className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-surface transition-colors hover:border-brand"
+              className="group flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 bg-surface/70 transition-colors hover:border-brand/60"
             >
               <div>
                 {article.coverImageUrl && (
@@ -124,9 +135,9 @@ export function NewsCatalogView({
                   </div>
                 )}
 
-                <div className="space-y-4 p-6 sm:p-8">
-                  <div className="flex items-center justify-between gap-2 text-xs text-slate-300">
-                    <span className="inline-block rounded-md border border-brand/40 bg-brand/15 px-3 py-1 font-mono font-bold text-brand uppercase">
+                <div className="space-y-3 p-6">
+                  <div className="flex items-center justify-between gap-2 text-xs text-slate-400">
+                    <span className="font-mono font-bold text-brand uppercase">
                       {article.category.name}
                     </span>
                     <span className="font-mono">
@@ -134,19 +145,13 @@ export function NewsCatalogView({
                     </span>
                   </div>
 
-                  <h2 className="font-display text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-brand">
+                  <h2 className="font-display text-lg font-bold tracking-wide text-foreground transition-colors group-hover:text-brand sm:text-xl">
                     {article.title}
                   </h2>
 
-                  <p className="line-clamp-3 text-sm leading-relaxed text-slate-300">
-                    {article.excerpt}
+                  <p className="line-clamp-2 text-sm leading-relaxed text-slate-400">
+                    {stripHtmlTags(article.excerpt)}
                   </p>
-                </div>
-              </div>
-
-              <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-                <div className="flex items-center justify-between border-t border-white/10 pt-4 text-xs font-bold text-brand uppercase">
-                  <span>{t.newsPage.readMore}</span>
                 </div>
               </div>
             </Link>

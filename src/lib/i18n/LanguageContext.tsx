@@ -59,15 +59,15 @@ export const DICTIONARY = {
       partnerCta: "Kontak Bisnis",
       partnersSectionTitle: "MITRA RESMI",
       partnersSectionSub: "",
-      upcomingTitle: "JADWAL PERTANDINGAN",
+      upcomingTitle: "BERLANGSUNG",
       upcomingSub: "",
       viewAllMatches: "Semua Pertandingan",
-      divisionTitle: "DIVISI KAMI",
+      divisionTitle: "DIVISI GAME",
       divisionSub: "",
       divisionBadge: "",
       divisionMeta: "",
       exploreDivisionBtn: "Lihat Roster",
-      newsTitle: "BERITA & KEGIATAN",
+      newsTitle: "BERITA",
       newsSub: "",
       viewAllNews: "Semua Berita",
       resultsTitle: "HASIL PERTANDINGAN",
@@ -107,19 +107,19 @@ export const DICTIONARY = {
       title: "PERTANDINGAN",
       subtitle: "",
       filterStatusAll: "Semua",
-      filterStatusLive: "Sedang Berlangsung",
-      filterStatusUpcoming: "Akan Datang",
-      filterStatusCompleted: "Selesai",
+      filterStatusLive: "Berlangsung",
+      filterStatusUpcoming: "Jadwal",
+      filterStatusCompleted: "Hasil",
       filterGameAll: "Semua Divisi",
       watchStream: "Tonton Siaran",
-      liveBadge: "SEDANG BERLANGSUNG",
+      liveBadge: "BERLANGSUNG",
       upcomingBadge: "AKAN DATANG",
       completedBadge: "SELESAI",
-      emptyState: "Belum ada jadwal pertandingan untuk kategori ini.",
+      emptyState: "Belum ada pertandingan untuk kategori ini.",
       pointsUnit: "POIN",
     },
     newsPage: {
-      title: "BERITA & KEGIATAN",
+      title: "BERITA",
       subtitle: "",
       filterAllCategories: "Semua",
       readMore: "Baca Artikel",
@@ -130,7 +130,7 @@ export const DICTIONARY = {
       relatedHeading: "BERITA LAINNYA",
     },
     partnersPage: {
-      title: "MITRA & SPONSOR",
+      title: "MITRA RESMI",
       subtitle:
         "Daftar mitra resmi yang bekerja sama dengan PT Adre Gemilang Jaya.",
       visitPartner: "Situs Mitra",
@@ -209,8 +209,8 @@ export const DICTIONARY = {
       sendAnotherBtn: "Kirim Pesan Baru",
     },
     footer: {
-      navHeading: "Menu",
-      divisionHeading: "Divisi",
+      navHeading: "Navigasi",
+      divisionHeading: "Divisi Game",
       divisionPrefix: "Tim",
       sponsorLink: "Pengajuan Sponsorship",
       contactHeading: "Kontak",
@@ -234,15 +234,15 @@ export const DICTIONARY = {
       partnerCta: "Contact Us",
       partnersSectionTitle: "OFFICIAL PARTNERS",
       partnersSectionSub: "",
-      upcomingTitle: "UPCOMING MATCHES",
+      upcomingTitle: "LIVE",
       upcomingSub: "",
       viewAllMatches: "All Matches",
-      divisionTitle: "OUR DIVISION",
+      divisionTitle: "GAME DIVISIONS",
       divisionSub: "",
       divisionBadge: "",
       divisionMeta: "",
       exploreDivisionBtn: "View Roster",
-      newsTitle: "NEWS & EVENTS",
+      newsTitle: "NEWS",
       newsSub: "",
       viewAllNews: "All News",
       resultsTitle: "MATCH RESULTS",
@@ -283,8 +283,8 @@ export const DICTIONARY = {
       subtitle: "",
       filterStatusAll: "All",
       filterStatusLive: "Live",
-      filterStatusUpcoming: "Upcoming",
-      filterStatusCompleted: "Completed",
+      filterStatusUpcoming: "Schedule",
+      filterStatusCompleted: "Results",
       filterGameAll: "All Divisions",
       watchStream: "Watch Stream",
       liveBadge: "LIVE",
@@ -294,7 +294,7 @@ export const DICTIONARY = {
       pointsUnit: "PTS",
     },
     newsPage: {
-      title: "NEWS & EVENTS",
+      title: "NEWS",
       subtitle: "",
       filterAllCategories: "All",
       readMore: "Read Article",
@@ -305,7 +305,7 @@ export const DICTIONARY = {
       relatedHeading: "OTHER NEWS",
     },
     partnersPage: {
-      title: "PARTNERS & SPONSORS",
+      title: "OFFICIAL PARTNERS",
       subtitle: "Official partners collaborating with PT Adre Gemilang Jaya.",
       visitPartner: "Partner Website",
       ctaBannerTitle: "Sponsorship Inquiries",
@@ -382,8 +382,8 @@ export const DICTIONARY = {
       sendAnotherBtn: "Send Another Message",
     },
     footer: {
-      navHeading: "Menu",
-      divisionHeading: "Division",
+      navHeading: "Navigation",
+      divisionHeading: "Game Divisions",
       divisionPrefix: "Team",
       sponsorLink: "Sponsorship Inquiry",
       contactHeading: "Contact",
@@ -408,10 +408,10 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("id");
+  const [locale, setLocaleState] = useState<Locale>("en");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("adre_locale");
+    const saved = window.localStorage.getItem("adre_locale_v2");
     if (saved === "en" || saved === "id") {
       const timer = window.setTimeout(() => {
         setLocaleState(saved);
@@ -422,7 +422,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLocale = (nextLocale: Locale) => {
     setLocaleState(nextLocale);
-    window.localStorage.setItem("adre_locale", nextLocale);
+    window.localStorage.setItem("adre_locale_v2", nextLocale);
   };
 
   const contextValue = useMemo(

@@ -2,11 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { Mail, MapPin } from "lucide-react";
+import { Mail } from "lucide-react";
 import type { GlobalSettings } from "@/lib/schemas";
 import { NAVIGATION_ITEMS, useLanguage } from "@/lib/i18n/LanguageContext";
 import { BrandLogo } from "@/components/ui/BrandElements";
-import { SmartLink } from "@/components/ui/SmartLink";
 
 interface ObsidianFooterProps {
   settings: GlobalSettings;
@@ -122,92 +121,56 @@ export function ObsidianFooter({ settings }: ObsidianFooterProps) {
   );
 
   return (
-    <footer className="border-t border-white/10 bg-surface text-slate-300">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
-          {/* Kolom 1: Logo Memenuhi Panjang Card Footer */}
-          <div className="w-full lg:col-span-5 lg:pr-6">
+    <footer className="border-t border-white/10 bg-background text-slate-400">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
               aria-label={settings.siteName}
-              className="block w-full transition-opacity hover:opacity-90"
+              className="inline-flex items-center transition-opacity hover:opacity-90"
             >
-              <BrandLogo
-                logoUrl={settings.logoUrl}
-                fullWidth
-                className="max-h-48 w-full"
-              />
+              <BrandLogo logoUrl={settings.logoUrl} className="h-10 w-auto" />
             </Link>
           </div>
 
-          {/* Kolom 2: Navigasi */}
-          <div className="lg:col-span-2">
-            <h2 className="font-display text-sm font-bold text-foreground uppercase">
-              {t.footer.navHeading}
-            </h2>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              {NAVIGATION_ITEMS.map((item) => (
-                <li key={item.key}>
-                  <Link
-                    href={item.href}
-                    className="transition-colors hover:text-brand"
-                  >
-                    {item.label[locale]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <nav
+            aria-label={t.footer.navHeading}
+            className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm font-medium text-slate-300"
+          >
+            {NAVIGATION_ITEMS.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                className="whitespace-nowrap transition-colors hover:text-brand"
+              >
+                {item.label[locale]}
+              </Link>
+            ))}
+            <Link
+              href="/contact"
+              className="whitespace-nowrap transition-colors hover:text-brand"
+            >
+              {t.footer.contactLink}
+            </Link>
+          </nav>
+        </div>
 
-          {/* Kolom 3: Divisi */}
-          <div className="lg:col-span-2">
-            <h2 className="font-display text-sm font-bold text-foreground uppercase">
-              {t.footer.divisionHeading}
-            </h2>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              {settings.activeDivisionsNav.map((div) => (
-                <li key={div.slug}>
-                  <Link
-                    href={`/teams/${div.slug}`}
-                    className="transition-colors hover:text-brand"
-                  >
-                    {div.name}
-                  </Link>
-                </li>
-              ))}
-              <li className="pt-2">
-                <SmartLink
-                  href="/contact"
-                  className="text-xs font-semibold text-brand hover:underline"
-                >
-                  {t.footer.sponsorLink}
-                </SmartLink>
-              </li>
-            </ul>
-          </div>
+        <div className="mt-8 flex flex-col justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center">
+          <p>
+            &copy; {currentYear} {settings.siteName}. {t.footer.rights}
+          </p>
 
-          {/* Kolom 4: Kontak */}
-          <div className="lg:col-span-3">
-            <h2 className="font-display text-sm font-bold text-foreground uppercase">
-              {t.footer.contactHeading}
-            </h2>
-            <ul className="mt-4 space-y-3 text-sm">
-              <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-brand" />
-                <a
-                  href={`mailto:${settings.contactQuick.businessEmail}`}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {settings.contactQuick.businessEmail}
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                <span>{t.footer.addressText}</span>
-              </li>
-            </ul>
+          <div className="flex flex-wrap items-center gap-5">
+            <a
+              href={`mailto:${settings.contactQuick.businessEmail}`}
+              className="inline-flex items-center gap-2 text-slate-400 transition-colors hover:text-brand"
+            >
+              <Mail className="h-3.5 w-3.5 text-brand" />
+              <span>{settings.contactQuick.businessEmail}</span>
+            </a>
 
-            <div className="mt-5 flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {socialEntries.map((social) => (
                 <a
                   key={social.key}
@@ -215,19 +178,16 @@ export function ObsidianFooter({ settings }: ObsidianFooterProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-background text-slate-300 transition-colors hover:text-brand"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-surface text-slate-300 transition-colors hover:border-brand/40 hover:text-brand"
                 >
-                  <FooterSocialSvg platform={social.key} className="h-4 w-4" />
+                  <FooterSocialSvg
+                    platform={social.key}
+                    className="h-3.5 w-3.5"
+                  />
                 </a>
               ))}
             </div>
           </div>
-        </div>
-
-        <div className="mt-12 border-t border-white/10 pt-6 text-xs text-slate-400">
-          <p>
-            &copy; {currentYear} {settings.siteName}. {t.footer.rights}
-          </p>
         </div>
       </div>
     </footer>

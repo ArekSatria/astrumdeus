@@ -5,13 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { HomePayload } from "@/lib/schemas";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import * as mockData from "@/lib/api/mock-data";
 import {
   CORPORATE_PARTNERS_DATA,
   translateArticleContent,
-  translateMatchStage,
 } from "@/lib/utils/corporate-helpers";
-import { formatMatchScoreDisplay } from "@/lib/utils/match-helpers";
 import { PartnerLogoGraphic } from "@/components/ui/BrandElements";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SmartLink } from "@/components/ui/SmartLink";
@@ -21,15 +18,26 @@ interface HomeBentoViewProps {
   data: HomePayload;
 }
 
+function stripHtmlTags(text: string): string {
+  return text.replace(/<[^>]*>/g, "").trim();
+}
+
 export function HomeBentoView({ data }: HomeBentoViewProps) {
   const { locale, t } = useLanguage();
 
-  const upcomingMatches = data.nextMatch ? [data.nextMatch] : [];
-  const completedMatches = data.recentResults || [];
+  // Hanya tampilkan indikator jika ada pertandingan yang sedang LIVE (Poin 4)
+  const liveMatch =
+    data.nextMatch && data.nextMatch.status === "LIVE" ? data.nextMatch : null;
 
+  const completedMatches = data.recentResults || [];
   const localizedNews = data.latestNews.map((item) =>
     translateArticleContent(item, locale),
   );
+
+  const partnersList =
+    data.partnersStrip && data.partnersStrip.length > 0
+      ? data.partnersStrip
+      : CORPORATE_PARTNERS_DATA;
 
   const formatDate = (iso: string) =>
     new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
@@ -39,190 +47,263 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
     }).format(new Date(iso));
 
   return (
-    <div className="space-y-16 pb-20">
-      {/* 1. FOTO TIM UTAMA */}
-      <section className="w-full border-b border-white/10 bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-surface sm:aspect-[21/9]">
-            <Image
-              src={data.hero?.heroImageUrl || "/images/team-hero.svg"}
-              alt="Skuad PT Adre Gemilang Jaya"
-              fill
-              unoptimized
-              priority
-              fetchPriority="high"
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              className="object-cover object-center"
-            />
+    <div className="space-y-20 pb-24">
+      {/* BAR INDIKATOR LIVE (Hanya muncul apabila sedang ada pertandingan LIVE) */}
+      {liveMatch && (
+        <div className="w-full border-b border-brand/30 bg-brand text-background">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 text-xs font-bold uppercase sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded bg-background px-2 py-0.5 font-mono text-[11px] font-bold text-brand">
+                <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                {locale === "id" ? "BERLANGSUNG" : "LIVE"}
+              </span>
+              <span className="tracking-wide">{liveMatch.tournamentName}</span>
+            </div>
+            {liveMatch.streamUrl && (
+              <SmartLink
+                href={liveMatch.streamUrl}
+                className="underline decoration-background/60 underline-offset-4 hover:opacity-80"
+              >
+                {t.home.watchStream}
+              </SmartLink>
+            )}
           </div>
+        </div>
+      )}
+
+      {/* 1. FOTO TIM UTAMA FULL-BLEED MINIMALIS (Poin 1) */}
+      <section className="relative w-full overflow-hidden border-b border-white/5 bg-background">
+        <div className="relative aspect-[16/9] w-full sm:aspect-[21/9] lg:aspect-[24/9]">
+          <Image
+            src={data.hero?.heroImageUrl || "/images/team-hero.svg"}
+            alt="Astrum Deus — PT Adre Gemilang Jaya"
+            fill
+            unoptimized
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          {/* Gradasi halus agar menyatu dan tidak kaku */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/15 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-background/50 to-transparent" />
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
-        {/* 2. MITRA RESMI (5 CARD PERSEGI, HANYA LOGO MEMENUHI CARD TANPA TEKS) */}
-        <section className="space-y-5">
-          <SectionHeading title={t.home.partnersSectionTitle} />
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {(data.partnersStrip && data.partnersStrip.length > 0 ? data.partnersStrip : CORPORATE_PARTNERS_DATA).map((partner) => (
-              <Link
-                key={partner.id}
-                href="/partners"
-                aria-label={partner.name}
-                className="group relative aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-surface transition-all duration-300 hover:border-brand"
-              >
-                <PartnerLogoGraphic
-                  partnerId={partner.id}
-                  name={partner.name}
-                  logoUrl={partner.logoUrl}
-                  className="transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. JADWAL PERTANDINGAN */}
-        <section className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <SectionHeading title={t.home.upcomingTitle} />
+      <div className="mx-auto max-w-7xl space-y-20 px-4 sm:px-6 lg:px-8">
+        {/* URUTAN 1: HASIL PERTANDINGAN (Poin 4 & 5 — Gaya Baris Minimalis) */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <SectionHeading title={t.home.resultsTitle} />
             <Link
               href="/matches"
-              className="text-xs font-bold text-brand uppercase hover:underline"
+              className="text-xs font-bold tracking-wider text-brand uppercase transition-opacity hover:opacity-80"
             >
               {t.home.viewAllMatches}
             </Link>
           </div>
 
-          {upcomingMatches.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-surface p-8 text-center text-sm text-slate-400">
+          {completedMatches.length === 0 ? (
+            <div className="rounded-xl border border-white/10 bg-surface/60 p-8 text-center text-sm text-slate-400">
               {t.matchesPage.emptyState}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {upcomingMatches.map((match) => (
-                <div
-                  key={match.id}
-                  className="flex flex-col justify-between rounded-xl border border-white/10 bg-surface p-6"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="font-bold text-brand uppercase">
-                        {match.division.name}
-                      </span>
-                      <span className="font-mono text-slate-300">
-                        {formatDate(match.scheduledAt)}
-                      </span>
+            <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-surface/70">
+              {completedMatches.map((match) => {
+                const placement = match.resultBattleRoyale?.placement;
+                const totalPoints = match.resultBattleRoyale?.totalPoints;
+                const wwcdCount = match.resultBattleRoyale?.wwcdCount;
+
+                return (
+                  <div
+                    key={match.id}
+                    className="flex flex-col justify-between gap-4 px-5 py-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:px-6 sm:py-5"
+                  >
+                    <div className="flex items-center gap-5">
+                      {/* Angka Peringkat Minimalis di Sisi Kiri */}
+                      <div
+                        className={cn(
+                          "flex h-11 w-11 shrink-0 items-center justify-center border-l-2 font-display text-2xl font-black",
+                          placement === 1
+                            ? "border-brand text-brand"
+                            : "border-white/20 text-slate-300",
+                        )}
+                      >
+                        {placement ? `#${placement}` : "-"}
+                      </div>
+
+                      <div className="space-y-1">
+                        <h3 className="font-display text-base font-bold tracking-wide text-foreground uppercase sm:text-lg">
+                          {match.tournamentName}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400">
+                          <span className="font-semibold text-brand uppercase">
+                            {match.division.name}
+                          </span>
+                          <span>&bull;</span>
+                          <span className="font-mono">
+                            {formatDate(match.scheduledAt)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    <h3 className="font-display text-xl font-bold text-foreground">
-                      {match.tournamentName}
-                    </h3>
-                    <p className="text-xs text-slate-300">
-                      {translateMatchStage(match.stage, locale)}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-                    <span
-                      className={cn(
-                        "font-mono text-xs font-bold uppercase inline-flex items-center gap-1.5",
-                        match.status === "LIVE" ? "text-rose-500" : "text-brand",
+                    {/* Statistik Poin & WWCD Minimalis di Sisi Kanan */}
+                    <div className="flex items-center gap-6 pl-16 sm:pl-0">
+                      {totalPoints !== undefined && (
+                        <div className="text-left sm:text-right">
+                          <div className="font-display text-lg font-bold text-foreground sm:text-xl">
+                            {totalPoints}
+                          </div>
+                          <div className="font-mono text-[10px] tracking-wider text-slate-400 uppercase">
+                            {t.home.pointsUnit}
+                          </div>
+                        </div>
                       )}
-                    >
-                      {match.status === "LIVE" && (
-                        <span className="inline-block h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                      {wwcdCount !== undefined && wwcdCount > 0 && (
+                        <div className="text-left sm:text-right">
+                          <div className="font-display text-lg font-bold text-brand sm:text-xl">
+                            {wwcdCount}x
+                          </div>
+                          <div className="font-mono text-[10px] tracking-wider text-slate-400 uppercase">
+                            WWCD
+                          </div>
+                        </div>
                       )}
-                      {match.status === "LIVE" ? "LIVE" : t.matchesPage.upcomingBadge}
-                    </span>
-                    {match.streamUrl && (
-                      <SmartLink
-                        href={match.streamUrl}
-                        className="text-xs font-bold text-foreground hover:text-brand"
-                      >
-                        {t.home.watchStream}
-                      </SmartLink>
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
 
-        {/* 4. DIVISI KAMI */}
-        <section className="space-y-5">
-          <SectionHeading title={t.home.divisionTitle} />
+        {/* URUTAN 2: DIVISI GAME (Poin 2 & 5) */}
+        <section className="space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <SectionHeading title={t.home.divisionTitle} />
+          </div>
 
           {data.activeDivisions && data.activeDivisions.length > 0 ? (
             <div
               className={cn(
                 "grid gap-6",
-                data.activeDivisions.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+                data.activeDivisions.length > 1
+                  ? "grid-cols-1 md:grid-cols-2"
+                  : "grid-cols-1",
               )}
             >
               {data.activeDivisions.map((division) => (
-                <div
+                <Link
                   key={division.id}
-                  className="group relative aspect-[2/1] w-full overflow-hidden rounded-2xl border border-white/10 bg-surface"
+                  href={`/teams/${division.slug}`}
+                  className="group relative block aspect-[2/1] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-colors hover:border-brand/60"
                 >
                   <div className="pointer-events-none absolute inset-0">
                     <Image
-                      src={division.bannerImageUrl || "/images/pubg-logo-bg.svg"}
+                      src={
+                        division.bannerImageUrl || "/images/pubg-logo-bg.svg"
+                      }
                       alt={division.name}
                       fill
                       unoptimized
                       sizes="(max-width: 1280px) 100vw, 640px"
-                      className="object-cover object-center opacity-80 transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover object-center opacity-75 transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/45 to-background/85" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
                   </div>
 
-                  <div className="relative z-10 flex h-full w-full flex-col justify-between p-6 sm:p-8 lg:p-10">
-                    <div className="space-y-2">
-                      {division.shortCode && (
-                        <span className="inline-block rounded-md border border-brand/40 bg-brand/15 px-3 py-1 font-mono text-xs font-bold tracking-wider text-brand uppercase">
-                          {division.shortCode}
-                        </span>
-                      )}
-                      <h3 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground uppercase">
-                        {division.name}
-                      </h3>
-                    </div>
-
-                    <div className="flex justify-end pt-4">
-                      <Link
-                        href={`/teams/${division.slug}`}
-                        className="inline-flex items-center justify-center rounded-xl bg-brand px-6 py-3 text-xs font-bold text-background uppercase transition-opacity hover:opacity-90"
-                      >
-                        {t.home.exploreDivisionBtn}
-                      </Link>
+                  <div className="relative z-10 flex h-full w-full flex-col justify-end p-6 sm:p-8">
+                    <div className="flex items-end justify-between gap-4">
+                      <div className="space-y-1.5">
+                        {division.shortCode && (
+                          <span className="inline-block font-mono text-xs font-bold tracking-widest text-brand uppercase">
+                            {division.shortCode}
+                          </span>
+                        )}
+                        <h3 className="font-display text-3xl font-black tracking-tight text-foreground uppercase transition-colors group-hover:text-brand sm:text-5xl">
+                          {division.name}
+                        </h3>
+                      </div>
+                      <span className="text-xs font-bold tracking-wider text-slate-300 uppercase transition-colors group-hover:text-brand">
+                        {t.home.exploreDivisionBtn} &rarr;
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-surface p-12 text-center text-sm text-slate-400">
-              Belum ada divisi yang aktif.
+            <div className="rounded-xl border border-white/10 bg-surface/60 p-10 text-center text-sm text-slate-400">
+              {locale === "id"
+                ? "Belum ada divisi game yang aktif."
+                : "No active game divisions."}
             </div>
           )}
         </section>
 
-        {/* 5. BERITA & KEGIATAN */}
-        <section className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
+        {/* URUTAN 3: MITRA RESMI (Poin 5 & 7 — Langsung Klik ke Website Mitra) */}
+        <section className="space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <SectionHeading title={t.home.partnersSectionTitle} />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {partnersList.map((partner) => {
+              const targetUrl = partner.websiteUrl || "/partners";
+              const isExternal =
+                targetUrl.startsWith("http://") ||
+                targetUrl.startsWith("https://");
+
+              return isExternal ? (
+                <a
+                  key={partner.id}
+                  href={targetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={partner.name}
+                  className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-all duration-300 hover:border-brand/60"
+                >
+                  <PartnerLogoGraphic
+                    partnerId={partner.id}
+                    name={partner.name}
+                    logoUrl={partner.logoUrl}
+                    className="transition-transform duration-500 group-hover:scale-105"
+                  />
+                </a>
+              ) : (
+                <Link
+                  key={partner.id}
+                  href={targetUrl}
+                  aria-label={partner.name}
+                  className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/10 bg-surface transition-all duration-300 hover:border-brand/60"
+                >
+                  <PartnerLogoGraphic
+                    partnerId={partner.id}
+                    name={partner.name}
+                    logoUrl={partner.logoUrl}
+                    className="transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* URUTAN 4: BERITA (Poin 3 & 5) */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
             <SectionHeading title={t.home.newsTitle} />
             <Link
               href="/news"
-              className="text-xs font-bold text-brand uppercase hover:underline"
+              className="text-xs font-bold tracking-wider text-brand uppercase transition-opacity hover:opacity-80"
             >
               {t.home.viewAllNews}
             </Link>
           </div>
 
           {localizedNews.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-surface p-8 text-center text-sm text-slate-400">
+            <div className="rounded-xl border border-white/10 bg-surface/60 p-8 text-center text-sm text-slate-400">
               {t.newsPage.emptyState}
             </div>
           ) : (
@@ -231,76 +312,25 @@ export function HomeBentoView({ data }: HomeBentoViewProps) {
                 <Link
                   key={article.id}
                   href={`/news/${article.slug}`}
-                  className="group flex flex-col justify-between rounded-xl border border-white/10 bg-surface p-6 transition-colors hover:border-brand"
+                  className="group flex flex-col justify-between rounded-xl border border-white/10 bg-surface/70 p-6 transition-colors hover:border-brand/60"
                 >
-                  <div>
-                    <div className="flex items-center justify-between text-xs text-slate-300">
-                      <span className="font-bold text-brand uppercase">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span className="font-mono font-bold text-brand uppercase">
                         {article.category.name}
                       </span>
-                      <span>{formatDate(article.publishedAt)}</span>
+                      <span className="font-mono">
+                        {formatDate(article.publishedAt)}
+                      </span>
                     </div>
-                    <h3 className="mt-3 font-display text-lg font-bold text-foreground group-hover:text-brand">
+                    <h3 className="font-display text-lg font-bold tracking-wide text-foreground transition-colors group-hover:text-brand">
                       {article.title}
                     </h3>
-                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-300">
-                      {article.excerpt}
+                    <p className="line-clamp-2 text-sm leading-relaxed text-slate-400">
+                      {stripHtmlTags(article.excerpt)}
                     </p>
-                  </div>
-
-                  <div className="mt-6 pt-3 text-xs font-bold text-brand uppercase">
-                    {t.newsPage.readMore}
                   </div>
                 </Link>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* 6. HASIL PERTANDINGAN */}
-        <section className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <SectionHeading title={t.home.resultsTitle} />
-            <Link
-              href="/matches"
-              className="text-xs font-bold text-brand uppercase hover:underline"
-            >
-              {t.home.viewAllMatches}
-            </Link>
-          </div>
-
-          {completedMatches.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-surface p-8 text-center text-sm text-slate-400">
-              {t.matchesPage.emptyState}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {completedMatches.map((match) => (
-                <div
-                  key={match.id}
-                  className="flex flex-col justify-between rounded-xl border border-white/10 bg-surface p-6 sm:flex-row sm:items-center"
-                >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-3 text-xs text-slate-300">
-                      <span className="font-bold text-brand uppercase">
-                        {match.division.name}
-                      </span>
-                      <span>{formatDate(match.scheduledAt)}</span>
-                    </div>
-                    <h3 className="font-display text-lg font-bold text-foreground">
-                      {match.tournamentName}
-                    </h3>
-                    <p className="text-xs text-slate-300">
-                      {translateMatchStage(match.stage, locale)}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 shrink-0 sm:mt-0">
-                    <span className="inline-block rounded-lg bg-brand/15 px-4 py-2 font-mono text-sm font-bold text-brand">
-                      {formatMatchScoreDisplay(match, t.home.pointsUnit)}
-                    </span>
-                  </div>
-                </div>
               ))}
             </div>
           )}
