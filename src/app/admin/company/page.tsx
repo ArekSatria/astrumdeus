@@ -44,6 +44,28 @@ export default function AdminCompanyPage() {
   const [missions, setMissions] = useState<MissionItem[]>([]);
   const [milestones, setMilestones] = useState<MilestoneItem[]>([]);
 
+  const htmlToPlainText = (html: string) => {
+    if (!html) return "";
+    return html
+      .replace(/<\/p>\s*<p[^>]*>/gi, "\n\n")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<p[^>]*>/gi, "")
+      .replace(/<\/p>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+  };
+
+  const plainTextToHtml = (text: string) => {
+    if (!text) return "";
+    if (/<[a-z][\s\S]*>/i.test(text)) return text;
+    return text
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+      .join("\n");
+  };
+
   const fetchCompanyData = async () => {
     setLoading(true);
     try {
@@ -53,7 +75,7 @@ export default function AdminCompanyPage() {
         const c = data.data;
         setFormData({
           companyName: c.companyName || "",
-          aboutHtml: c.aboutHtml || "",
+          aboutHtml: htmlToPlainText(c.aboutHtml || ""),
           vision: c.vision || "",
           officeAddress: c.contact?.officeAddress || "",
           businessEmail: c.contact?.businessEmail || "",
@@ -166,7 +188,7 @@ export default function AdminCompanyPage() {
     try {
       const payload = {
         companyName: formData.companyName,
-        aboutHtml: formData.aboutHtml,
+        aboutHtml: plainTextToHtml(formData.aboutHtml),
         vision: formData.vision,
         missions: missions
           .filter((m) => m.title.trim().length > 0 || m.description.trim().length > 0)
@@ -235,15 +257,15 @@ export default function AdminCompanyPage() {
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-slate-500 bg-slate-900/50 border border-slate-800 rounded-2xl">
+        <div className="p-8 text-center text-slate-500 bg-[#16161e] border border-[#262936] rounded-2xl">
           Memuat data profil...
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section: Identitas & Tentang Kami */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <FileText size={18} className="text-blue-500" /> Identitas & Cerita Perusahaan
+              <FileText size={18} className="text-amber-400" /> Identitas & Cerita Perusahaan
             </h2>
 
             <div>
@@ -253,26 +275,27 @@ export default function AdminCompanyPage() {
                 required
                 value={formData.companyName}
                 onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500 font-medium"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Deskripsi Tentang Perusahaan (HTML)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Deskripsi Tentang Perusahaan</label>
               <textarea
                 rows={6}
                 required
                 value={formData.aboutHtml}
                 onChange={(e) => setFormData({ ...formData, aboutHtml: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-blue-500"
+                placeholder="Tuliskan cerita dan profil lengkap perusahaan di sini... Tekan Enter untuk membuat paragraf baru."
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 leading-relaxed"
               />
             </div>
           </div>
 
           {/* Section: Visi & Misi */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-5">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-5">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Target size={18} className="text-blue-500" /> Visi & Misi Organisasi
+              <Target size={18} className="text-amber-400" /> Visi & Misi Organisasi
             </h2>
 
             <div>
@@ -283,11 +306,11 @@ export default function AdminCompanyPage() {
                 placeholder="Visi jangka panjang organisasi..."
                 value={formData.vision}
                 onChange={(e) => setFormData({ ...formData, vision: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
 
-            <div className="pt-2 border-t border-slate-800/80 space-y-3">
+            <div className="pt-2 border-t border-[#262936] space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300">
@@ -300,14 +323,16 @@ export default function AdminCompanyPage() {
                 <button
                   type="button"
                   onClick={handleAddMission}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-semibold transition cursor-pointer self-start sm:self-auto"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-400 text-amber-400 hover:text-slate-950 border border-amber-500/30 text-xs font-semibold transition cursor-pointer self-start sm:self-auto transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <Plus size={14} /> Tambah Misi
+                  <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic">
+                    <Plus size={14} /> Tambah Misi
+                  </span>
                 </button>
               </div>
 
               {missions.length === 0 ? (
-                <div className="p-5 rounded-xl border border-dashed border-slate-800 text-center text-xs text-slate-500">
+                <div className="p-5 rounded-xl border border-dashed border-[#262936] text-center text-xs text-slate-500">
                   Belum ada misi. Klik tombol "+ Tambah Misi" untuk menambahkan misi baru.
                 </div>
               ) : (
@@ -315,11 +340,11 @@ export default function AdminCompanyPage() {
                   {missions.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3"
+                      className="p-4 rounded-xl bg-[#0f131c] border border-[#262936] space-y-3"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/15 font-mono text-xs font-bold text-blue-400">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 font-mono text-xs font-bold text-amber-400">
                             {idx + 1}
                           </span>
                           <div className="flex-1 min-w-0">
@@ -334,7 +359,7 @@ export default function AdminCompanyPage() {
                               onChange={(e) =>
                                 handleUpdateMission(idx, "title", e.target.value)
                               }
-                              className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white font-medium focus:outline-none focus:border-blue-500"
+                              className="w-full px-3 py-2 bg-[#1f222e] border border-[#262936] rounded-xl text-sm text-white font-medium focus:outline-none focus:border-amber-400"
                             />
                           </div>
                         </div>
@@ -343,10 +368,10 @@ export default function AdminCompanyPage() {
                           <button
                             type="button"
                             onClick={() => handleRemoveMission(idx)}
-                            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                             title="Hapus misi ini"
                           >
-                            <Trash2 size={16} />
+                            <span className="transform skew-x-12"><Trash2 size={15} /></span>
                           </button>
                         </div>
                       </div>
@@ -363,7 +388,7 @@ export default function AdminCompanyPage() {
                           onChange={(e) =>
                             handleUpdateMission(idx, "description", e.target.value)
                           }
-                          className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500 leading-relaxed"
+                          className="w-full px-3 py-2 bg-[#1f222e] border border-[#262936] rounded-xl text-sm text-slate-200 focus:outline-none focus:border-amber-400 leading-relaxed"
                         />
                       </div>
                     </div>
@@ -374,11 +399,11 @@ export default function AdminCompanyPage() {
           </div>
 
           {/* Section: Perjalanan Kami (Tonggak Sejarah) */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <Milestone size={18} className="text-amber-500" /> Perjalanan Kami (Tonggak Sejarah)
+                  <Milestone size={18} className="text-amber-400" /> Perjalanan Kami (Tonggak Sejarah)
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
                   Kelola tonggak sejarah dan linimasa pencapaian yang tampil pada halaman Tentang Kami.
@@ -387,14 +412,16 @@ export default function AdminCompanyPage() {
               <button
                 type="button"
                 onClick={handleAddMilestone}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold transition cursor-pointer self-start sm:self-auto"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-400 text-amber-400 hover:text-slate-950 border border-amber-500/30 text-xs font-semibold transition cursor-pointer self-start sm:self-auto transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <Plus size={14} /> Tambah Tonggak
+                <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic">
+                  <Plus size={14} /> Tambah Tonggak
+                </span>
               </button>
             </div>
 
             {milestones.length === 0 ? (
-              <div className="p-6 rounded-xl border border-dashed border-slate-800 text-center text-xs text-slate-500">
+              <div className="p-6 rounded-xl border border-dashed border-[#262936] text-center text-xs text-slate-500">
                 Belum ada data tonggak sejarah. Klik tombol "+ Tambah Tonggak" untuk menambahkan.
               </div>
             ) : (
@@ -402,7 +429,7 @@ export default function AdminCompanyPage() {
                 {milestones.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3"
+                    className="p-4 rounded-xl bg-[#0f131c] border border-[#262936] space-y-3"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="w-28 sm:w-36 shrink-0">
@@ -417,7 +444,7 @@ export default function AdminCompanyPage() {
                           onChange={(e) =>
                             handleUpdateMilestone(idx, "year", e.target.value)
                           }
-                          className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-amber-400 font-mono font-bold focus:outline-none focus:border-amber-500"
+                          className="w-full px-3 py-2 bg-[#1f222e] border border-[#262936] rounded-xl text-sm text-amber-400 font-mono font-bold focus:outline-none focus:border-amber-400"
                         />
                       </div>
 
@@ -433,7 +460,7 @@ export default function AdminCompanyPage() {
                           onChange={(e) =>
                             handleUpdateMilestone(idx, "title", e.target.value)
                           }
-                          className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500 font-medium"
+                          className="w-full px-3 py-2 bg-[#1f222e] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
                         />
                       </div>
 
@@ -441,10 +468,10 @@ export default function AdminCompanyPage() {
                         <button
                           type="button"
                           onClick={() => handleRemoveMilestone(idx)}
-                          className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
+                          className="inline-flex items-center justify-center p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                           title="Hapus tonggak ini"
                         >
-                          <Trash2 size={16} />
+                          <span className="transform skew-x-12"><Trash2 size={15} /></span>
                         </button>
                       </div>
                     </div>
@@ -461,7 +488,7 @@ export default function AdminCompanyPage() {
                         onChange={(e) =>
                           handleUpdateMilestone(idx, "description", e.target.value)
                         }
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-amber-500 leading-relaxed"
+                        className="w-full px-3 py-2 bg-[#1f222e] border border-[#262936] rounded-xl text-sm text-slate-200 focus:outline-none focus:border-amber-400 leading-relaxed"
                       />
                     </div>
                   </div>
@@ -471,9 +498,9 @@ export default function AdminCompanyPage() {
           </div>
 
           {/* Section: Kontak & Kantor */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Mail size={18} className="text-blue-500" /> Informasi Kontak & Kantor
+              <Mail size={18} className="text-amber-400" /> Informasi Kontak & Kantor
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -484,7 +511,7 @@ export default function AdminCompanyPage() {
                   required
                   value={formData.businessEmail}
                   onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -495,7 +522,7 @@ export default function AdminCompanyPage() {
                   required
                   value={formData.partnershipEmail}
                   onChange={(e) => setFormData({ ...formData, partnershipEmail: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
             </div>
@@ -507,7 +534,7 @@ export default function AdminCompanyPage() {
                 required
                 value={formData.officeAddress}
                 onChange={(e) => setFormData({ ...formData, officeAddress: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
@@ -516,10 +543,12 @@ export default function AdminCompanyPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-900/40 transition disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <Save size={16} />
-              {saving ? "Menyimpan Perubahan..." : "Simpan Profil Korporasi"}
+              <span className="inline-flex items-center gap-2 transform skew-x-12 font-bold italic tracking-wide">
+                <Save size={16} />
+                {saving ? "Menyimpan Perubahan..." : "Simpan Profil Korporasi"}
+              </span>
             </button>
           </div>
         </form>

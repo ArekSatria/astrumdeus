@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -15,7 +16,6 @@ import {
   ExternalLink,
   Menu,
   X,
-  Database,
 } from "lucide-react";
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
@@ -49,18 +49,28 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-[#0f131c] text-slate-100 flex flex-col md:flex-row font-sans">
       {/* Mobile Topbar */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center font-black text-white text-sm shadow-lg shadow-red-900/40">
-            AG
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#16161e] border-b border-[#262936] sticky top-0 z-50">
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-black/80 border border-white/10 flex items-center justify-center p-1 shadow-md">
+            <Image
+              src="/images/logo-ad.png"
+              alt="Astrum Deus Logo"
+              width={32}
+              height={32}
+              className="w-full h-full object-contain"
+              unoptimized
+            />
           </div>
-          <span className="font-bold text-sm tracking-wide text-white">ADRE CMS</span>
+          <div>
+            <span className="font-bold text-sm tracking-wide text-white leading-tight block">ADRE CMS</span>
+            <span className="text-[10px] text-slate-400 font-medium block">Astrum Deus</span>
+          </div>
         </div>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+          className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-[#1f222e]"
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -68,22 +78,26 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar Desktop */}
       <aside
-        className={`fixed md:sticky top-0 h-screen z-40 w-64 bg-slate-900/90 backdrop-blur-md border-r border-slate-800 flex flex-col transition-transform duration-200 ${
+        className={`fixed md:sticky top-0 h-screen z-40 w-64 bg-[#16161e] backdrop-blur-md border-r border-[#262936] flex flex-col transition-transform duration-200 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         {/* Brand Header */}
-        <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+        <div className="p-5 border-b border-[#262936] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center font-black text-white text-base shadow-lg shadow-red-900/40">
-              AG
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-black/80 border border-white/10 flex items-center justify-center p-1.5 shadow-lg">
+              <Image
+                src="/images/logo-ad.png"
+                alt="Astrum Deus Logo"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+                unoptimized
+              />
             </div>
             <div>
               <h2 className="font-bold text-sm tracking-wide text-white leading-tight">ADRE CMS</h2>
-              <p className="text-[11px] text-emerald-400 flex items-center gap-1.5 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Neon Postgres
-              </p>
+              <p className="text-[11px] text-slate-400 font-medium">Astrum Deus Esports</p>
             </div>
           </div>
         </div>
@@ -102,13 +116,13 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all ${
                   isActive
-                    ? "bg-red-600 text-white shadow-md shadow-red-900/30 font-semibold"
-                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/60"
+                    ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-bold shadow-lg shadow-amber-500/25"
+                    : "text-slate-400 hover:text-amber-300 hover:bg-[#1f222e]"
                 }`}
               >
-                <Icon size={18} className={isActive ? "text-white" : "text-slate-400"} />
+                <Icon size={18} className={isActive ? "text-slate-950" : "text-slate-400"} />
                 {item.label}
               </Link>
             );
@@ -116,11 +130,11 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Footer Actions */}
-        <div className="p-3 border-t border-slate-800/80 space-y-1">
+        <div className="p-3 border-t border-[#262936] space-y-1">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+            className="flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-slate-400 hover:text-amber-400 hover:bg-[#1f222e] transition"
           >
             <span className="flex items-center gap-2">
               <ExternalLink size={14} /> Lihat Website Publik
@@ -129,7 +143,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 transition text-left"
+            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 transition text-left cursor-pointer"
           >
             <LogOut size={14} /> Keluar (Logout)
           </button>

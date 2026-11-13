@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
           )}
 
           {/* Form Login */}
-          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5" autoComplete="off">
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -122,10 +122,10 @@ export default function AdminLoginPage() {
                   id="email"
                   type="email"
                   required
-                  autoComplete="email"
+                  autoComplete="off"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@adregemilangjaya.com"
+                  placeholder=""
                   className="w-full rounded-xl border border-white/10 bg-background/90 py-3.5 pl-11 pr-4 text-sm text-foreground placeholder-slate-500 transition focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/40"
                 />
               </div>
@@ -147,10 +147,10 @@ export default function AdminLoginPage() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder=""
                   className="w-full rounded-xl border border-white/10 bg-background/90 py-3.5 pl-11 pr-11 text-sm text-foreground placeholder-slate-500 transition focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/40"
                 />
                 <button

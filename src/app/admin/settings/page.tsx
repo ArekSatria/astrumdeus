@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Settings className="text-red-500" size={24} />
+          <Settings className="text-amber-400" size={24} />
           Pengaturan Global Website
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -150,15 +150,15 @@ export default function AdminSettingsPage() {
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-slate-500 bg-slate-900/50 border border-slate-800 rounded-2xl">
+        <div className="p-8 text-center text-slate-500 bg-[#16161e] border border-[#262936] rounded-2xl">
           Memuat pengaturan...
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Brand Info */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Globe size={18} className="text-red-500" /> Identitas Dasar
+              <Globe size={18} className="text-amber-400" /> Identitas Dasar
             </h2>
 
             <div>
@@ -168,7 +168,7 @@ export default function AdminSettingsPage() {
                 required
                 value={formData.siteName}
                 onChange={(e) => setFormData({ ...formData, siteName: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500 font-bold"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-bold"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function AdminSettingsPage() {
                 required
                 value={formData.tagline}
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
 
@@ -190,17 +190,17 @@ export default function AdminSettingsPage() {
                 value={formData.logoUrl}
                 onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                 placeholder="https://... atau /logo.png"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
 
           {/* Section: Foto Utama Beranda (Foto Bersama Skuad AD) */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <ImageIcon size={18} className="text-red-500" /> Foto Utama Beranda (Foto Bersama Skuad AD)
+                  <ImageIcon size={18} className="text-amber-400" /> Foto Utama Beranda (Foto Bersama Skuad AD)
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
                   Foto banner tim utama yang tampil di beranda website. Jika dihapus, otomatis kembali ke ilustrasi default.
@@ -212,7 +212,7 @@ export default function AdminSettingsPage() {
                     Foto Kustom Aktif
                   </span>
                 ) : (
-                  <span className="px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
+                  <span className="px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
                     Ilustrasi Default
                   </span>
                 )}
@@ -220,7 +220,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* Preview Box */}
-            <div className="relative aspect-[21/9] max-h-72 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center">
+            <div className="relative aspect-[21/9] max-h-72 w-full rounded-2xl overflow-hidden border border-[#262936] bg-[#0f131c] flex items-center justify-center">
               <img
                 src={formData.heroImageUrl || "/images/team-hero.svg"}
                 alt="Foto Bersama Skuad AD"
@@ -230,13 +230,15 @@ export default function AdminSettingsPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition cursor-pointer shadow-lg shadow-red-900/30">
-                <Upload size={15} />
-                {uploadingHero
-                  ? "Mengunggah Foto..."
-                  : formData.heroImageUrl
-                  ? "Ganti Foto Bersama"
-                  : "Unggah Foto Bersama AD"}
+              <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 text-xs font-bold transition cursor-pointer shadow-lg shadow-amber-500/20 transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]">
+                <span className="inline-flex items-center gap-2 transform skew-x-12 font-bold italic">
+                  <Upload size={15} />
+                  {uploadingHero
+                    ? "Mengunggah Foto..."
+                    : formData.heroImageUrl
+                    ? "Ganti Foto Bersama"
+                    : "Unggah Foto Bersama AD"}
+                </span>
                 <input
                   type="file"
                   accept="image/*"
@@ -250,18 +252,20 @@ export default function AdminSettingsPage() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, heroImageUrl: "" })}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-rose-950/60 hover:text-rose-400 border border-slate-700 text-xs font-semibold text-slate-300 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#1f222e] hover:bg-rose-950/60 hover:text-rose-400 border border-[#262936] text-xs font-semibold text-slate-300 transition cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <Trash2 size={14} /> Hapus & Kembalikan ke Awal
+                  <span className="inline-flex items-center gap-1.5 transform skew-x-12">
+                    <Trash2 size={14} /> Hapus & Kembalikan ke Awal
+                  </span>
                 </button>
               )}
             </div>
           </div>
 
           {/* Social Media Links */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#16161e] border border-[#262936] space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Share2 size={18} className="text-red-500" /> Tautan Media Sosial Resmi
+              <Share2 size={18} className="text-amber-400" /> Tautan Media Sosial Resmi
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -277,7 +281,7 @@ export default function AdminSettingsPage() {
                     })
                   }
                   placeholder="https://instagram.com/adregemilangjaya"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -293,7 +297,7 @@ export default function AdminSettingsPage() {
                     })
                   }
                   placeholder="https://youtube.com/@adregemilangjaya"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -309,7 +313,7 @@ export default function AdminSettingsPage() {
                     })
                   }
                   placeholder="https://tiktok.com/@adregemilangjaya"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -325,7 +329,7 @@ export default function AdminSettingsPage() {
                     })
                   }
                   placeholder="https://x.com/adregemilangjaya"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
             </div>
@@ -335,10 +339,12 @@ export default function AdminSettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm shadow-lg shadow-red-900/40 transition disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <Save size={16} />
-              {saving ? "Menyimpan..." : "Simpan Pengaturan"}
+              <span className="inline-flex items-center gap-2 transform skew-x-12 font-bold italic tracking-wide">
+                <Save size={16} />
+                {saving ? "Menyimpan..." : "Simpan Pengaturan"}
+              </span>
             </button>
           </div>
         </form>

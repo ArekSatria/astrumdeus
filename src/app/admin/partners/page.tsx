@@ -197,41 +197,41 @@ export default function AdminPartnersPage() {
         </div>
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-emerald-900/40 transition self-start sm:self-auto cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition self-start sm:self-auto cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Plus size={16} /> Tambah Mitra Baru
+          <span className="inline-flex items-center gap-2 transform skew-x-12 font-bold italic tracking-wide">
+            <Plus size={16} /> Tambah Mitra Baru
+          </span>
         </button>
       </div>
 
       {/* Partners Table */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-[#16161e] border border-[#262936] rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/80 text-xs uppercase font-semibold text-slate-400 border-b border-slate-800">
+            <thead className="bg-[#0f131c]/80 text-xs uppercase font-semibold text-slate-400 border-b border-[#262936]">
               <tr>
                 <th className="px-5 py-4">Nama Mitra</th>
                 <th className="px-5 py-4">Kategori Tier</th>
-                <th className="px-5 py-4">Deskripsi Kerja Sama</th>
-                <th className="px-5 py-4">Urutan</th>
                 <th className="px-5 py-4 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#262936]">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center text-slate-500">
+                  <td colSpan={3} className="px-5 py-8 text-center text-slate-500">
                     Memuat data mitra...
                   </td>
                 </tr>
               ) : partners.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-8 text-center text-slate-500">
+                  <td colSpan={3} className="px-5 py-8 text-center text-slate-500">
                     Belum ada mitra sponsor.
                   </td>
                 </tr>
               ) : (
                 partners.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/40 transition">
+                  <tr key={item.id} className="hover:bg-[#1f222e]/60 transition">
                     <td className="px-5 py-4">
                       <div className="font-semibold text-white">{item.name}</div>
                       {item.websiteUrl && (
@@ -239,7 +239,7 @@ export default function AdminPartnersPage() {
                           href={item.websiteUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-xs text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"
+                          className="text-xs text-emerald-400 hover:underline inline-flex items-center gap-1 mt-0.5"
                         >
                           {item.websiteUrl} <ExternalLink size={11} />
                         </a>
@@ -250,26 +250,20 @@ export default function AdminPartnersPage() {
                         {item.tier}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-xs text-slate-400 max-w-xs truncate">
-                      {item.description}
-                    </td>
-                    <td className="px-5 py-4 text-xs font-mono text-slate-400">
-                      #{item.displayOrder}
-                    </td>
                     <td className="px-5 py-4 text-right space-x-2">
                       <button
                         onClick={() => openEditModal(item)}
-                        className="p-1.5 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-blue-950/40 cursor-pointer"
+                        className="inline-flex items-center justify-center p-2 rounded-lg bg-amber-500/10 hover:bg-amber-400 text-amber-400 hover:text-slate-950 border border-amber-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                         title="Edit Mitra"
                       >
-                        <Pencil size={15} />
+                        <span className="transform skew-x-12"><Pencil size={14} /></span>
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 cursor-pointer"
+                        className="inline-flex items-center justify-center p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                         title="Hapus Mitra"
                       >
-                        <Trash2 size={15} />
+                        <span className="transform skew-x-12"><Trash2 size={14} /></span>
                       </button>
                     </td>
                   </tr>
@@ -283,14 +277,14 @@ export default function AdminPartnersPage() {
       {/* Modal Add / Edit */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="bg-[#16161e] border border-[#262936] rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+            <div className="px-6 py-4 border-b border-[#262936] flex items-center justify-between">
               <h2 className="font-bold text-lg text-white">
                 {editingPartner ? "Edit Mitra Sponsor" : "Tambah Mitra Sponsor"}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#1f222e]"
               >
                 <X size={18} />
               </button>
@@ -318,7 +312,7 @@ export default function AdminPartnersPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Contoh: Asus ROG / RedBull"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
                 />
               </div>
 
@@ -327,7 +321,7 @@ export default function AdminPartnersPage() {
                 <select
                   value={formData.tier}
                   onChange={(e) => setFormData({ ...formData, tier: e.target.value as any })}
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 font-semibold"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-semibold"
                 >
                   <option value="PRINCIPAL">PRINCIPAL (Sponsor Utama)</option>
                   <option value="OFFICIAL">OFFICIAL (Sponsor Resmi)</option>
@@ -343,7 +337,7 @@ export default function AdminPartnersPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Bentuk dukungan atau peran mitra dalam tim..."
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -354,7 +348,7 @@ export default function AdminPartnersPage() {
                   value={formData.websiteUrl}
                   onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -364,7 +358,7 @@ export default function AdminPartnersPage() {
                   type="number"
                   value={formData.displayOrder}
                   onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 1 })}
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -375,8 +369,8 @@ export default function AdminPartnersPage() {
                 </label>
 
                 {formData.logoUrl ? (
-                  <div className="flex items-center gap-4 p-3.5 bg-slate-950 border border-slate-800 rounded-xl">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0 p-1 flex items-center justify-center">
+                  <div className="flex items-center gap-4 p-3.5 bg-[#0f131c] border border-[#262936] rounded-xl">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-[#16161e] border border-[#262936] shrink-0 p-1 flex items-center justify-center">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={formData.logoUrl}
@@ -392,7 +386,7 @@ export default function AdminPartnersPage() {
                         <CheckCircle size={12} /> Logo siap ditampilkan di kartu web
                       </p>
                       <div className="flex items-center gap-3 mt-2">
-                        <label className="text-xs text-blue-400 hover:text-blue-300 font-medium transition cursor-pointer">
+                        <label className="text-xs text-amber-400 hover:text-amber-300 font-medium transition cursor-pointer">
                           Ganti Logo
                           <input
                             type="file"
@@ -414,7 +408,7 @@ export default function AdminPartnersPage() {
                     </div>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-800 hover:border-emerald-500/60 bg-slate-950/60 hover:bg-slate-950 rounded-xl p-5 cursor-pointer transition group">
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#262936] hover:border-amber-400/60 bg-[#0f131c]/60 hover:bg-[#0f131c] rounded-xl p-5 cursor-pointer transition group">
                     <input
                       type="file"
                       accept="image/*"
@@ -422,10 +416,10 @@ export default function AdminPartnersPage() {
                       onChange={handleLogoUpload}
                       disabled={uploadingLogo}
                     />
-                    <div className="p-3 rounded-full bg-slate-900 text-slate-400 group-hover:text-emerald-400 transition mb-2">
+                    <div className="p-3 rounded-full bg-[#16161e] text-slate-400 group-hover:text-amber-400 transition mb-2">
                       <Upload size={20} />
                     </div>
-                    <span className="text-xs font-semibold text-white group-hover:text-emerald-400 transition">
+                    <span className="text-xs font-semibold text-white group-hover:text-amber-400 transition">
                       {uploadingLogo ? "Sedang Mengunggah Logo..." : "Klik untuk Upload File Logo Mitra"}
                     </span>
                     <span className="text-[11px] text-slate-500 mt-1 text-center">
@@ -435,20 +429,22 @@ export default function AdminPartnersPage() {
                 )}
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-[#262936] flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1f222e] transition transform -skew-x-12"
                 >
-                  Batal
+                  <span className="transform skew-x-12 inline-block">Batal</span>
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-900/40 transition disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {saving ? "Menyimpan..." : "Simpan Mitra"}
+                  <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic tracking-wide">
+                    {saving ? "Menyimpan..." : "Simpan Mitra"}
+                  </span>
                 </button>
               </div>
             </form>

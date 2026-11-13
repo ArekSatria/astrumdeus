@@ -269,6 +269,12 @@ export default function AdminTeamsPage() {
     setFeedback(null);
 
     try {
+      const payload = {
+        ...divisionForm,
+        shortCode: divisionForm.shortCode || divisionForm.name.slice(0, 4).toUpperCase(),
+        gameTitle: divisionForm.gameTitle || divisionForm.name,
+      };
+
       const url = editingDivision
         ? `/api/v1/teams/${editingDivision.slug}`
         : `/api/v1/teams`;
@@ -277,7 +283,7 @@ export default function AdminTeamsPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(divisionForm),
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
@@ -420,7 +426,7 @@ export default function AdminTeamsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <ShieldAlert className="text-red-500" /> Divisi & Roster Atlet
+            <ShieldAlert className="text-amber-400" /> Divisi & Roster Atlet
           </h1>
           <p className="text-sm text-slate-400 mt-1">
             Kelola skuad pemain inti, manajer, pelatih, analis, serta profil atlet per divisi game.
@@ -429,7 +435,7 @@ export default function AdminTeamsPage() {
       </div>
 
       {/* Division Tabs & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#262936] pb-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 flex-1">
           {divisions.map((div) => (
             <button
@@ -437,8 +443,8 @@ export default function AdminTeamsPage() {
               onClick={() => setSelectedSlug(div.slug)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 selectedSlug === div.slug
-                  ? "bg-red-600 text-white shadow-lg shadow-red-950/50"
-                  : "bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800"
+                  ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20"
+                  : "bg-[#16161e] border border-[#262936] text-slate-400 hover:text-white hover:bg-[#1f222e]"
               }`}
             >
               {div.name}
@@ -447,9 +453,11 @@ export default function AdminTeamsPage() {
 
           <button
             onClick={openAddDivision}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-semibold whitespace-nowrap transition cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#16161e] border border-[#262936] hover:border-amber-400/40 text-slate-300 hover:text-white text-xs font-semibold whitespace-nowrap transition cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Plus size={14} className="text-red-500" /> Tambah Divisi
+            <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic">
+              <Plus size={14} className="text-amber-400" /> Tambah Divisi
+            </span>
           </button>
         </div>
 
@@ -457,15 +465,19 @@ export default function AdminTeamsPage() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => openEditDivision(divisionDetail)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-medium transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#16161e] hover:bg-[#1f222e] text-slate-300 hover:text-white border border-[#262936] text-xs font-medium transition cursor-pointer transform -skew-x-12 hover:scale-105 active:scale-95"
             >
-              <Pencil size={13} className="text-amber-400" /> Edit Divisi
+              <span className="inline-flex items-center gap-1.5 transform skew-x-12">
+                <Pencil size={13} className="text-amber-400" /> Edit Divisi
+              </span>
             </button>
             <button
               onClick={() => handleDeleteDivision(divisionDetail.slug, divisionDetail.name)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/50 text-slate-400 hover:text-rose-400 border border-slate-800 text-xs font-medium transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#16161e] hover:bg-rose-950/50 text-slate-400 hover:text-rose-400 border border-[#262936] text-xs font-medium transition cursor-pointer transform -skew-x-12 hover:scale-105 active:scale-95"
             >
-              <Trash2 size={13} /> Hapus Divisi
+              <span className="inline-flex items-center gap-1.5 transform skew-x-12">
+                <Trash2 size={13} /> Hapus Divisi
+              </span>
             </button>
           </div>
         )}
@@ -473,10 +485,10 @@ export default function AdminTeamsPage() {
 
       {/* Selected Division Header Card */}
       {divisionDetail && (
-        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="relative overflow-hidden rounded-2xl border border-[#262936] bg-[#16161e] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs font-bold uppercase">
+              <span className="px-2.5 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/30 text-amber-300 font-mono text-xs font-bold uppercase">
                 {divisionDetail.shortCode || "DIVISI"}
               </span>
               <span className="text-xs text-slate-400">
@@ -493,7 +505,7 @@ export default function AdminTeamsPage() {
 
           <div className="flex items-center gap-4">
             {(divisionDetail as any).bannerImageUrl && (
-              <div className="w-32 aspect-[2/1] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shrink-0">
+              <div className="w-32 aspect-[2/1] rounded-xl overflow-hidden border border-[#262936] bg-[#0f131c] shrink-0">
                 <img
                   src={(divisionDetail as any).bannerImageUrl}
                   alt={divisionDetail.name}
@@ -506,11 +518,11 @@ export default function AdminTeamsPage() {
       )}
 
       {/* Roster Section */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl p-6 space-y-4">
+      <div className="bg-[#16161e] border border-[#262936] rounded-2xl overflow-hidden shadow-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Users size={18} className="text-red-500" />
+              <Users size={18} className="text-amber-400" />
               Daftar Roster & Staf ({divisionDetail?.name || "Divisi"})
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -519,34 +531,35 @@ export default function AdminTeamsPage() {
           </div>
           <button
             onClick={openAddRoster}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-900/40 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <UserPlus size={15} /> Tambah Anggota Roster
+            <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic tracking-wide">
+              <UserPlus size={15} /> Tambah Anggota Roster
+            </span>
           </button>
         </div>
 
         {/* Table of Members */}
-        <div className="border border-slate-800/80 rounded-xl overflow-hidden">
+        <div className="border border-[#262936] rounded-xl overflow-hidden">
           <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/90 text-xs uppercase font-semibold text-slate-400 border-b border-slate-800">
+            <thead className="bg-[#0f131c]/90 text-xs uppercase font-semibold text-slate-400 border-b border-[#262936]">
               <tr>
-                <th className="px-4 py-3">IGN & Nama Lengkap</th>
+                <th className="px-4 py-3">Pemain / Atlet</th>
                 <th className="px-4 py-3">Role / Jabatan</th>
                 <th className="px-4 py-3">Tipe</th>
-                <th className="px-4 py-3">Negara</th>
                 <th className="px-4 py-3 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#262936]">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
                     Memuat data roster...
                   </td>
                 </tr>
               ) : !divisionDetail?.roster || divisionDetail.roster.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
                     Belum ada anggota roster di divisi ini.
                   </td>
                 </tr>
@@ -554,15 +567,8 @@ export default function AdminTeamsPage() {
                 divisionDetail.roster.map((member) => (
                   <tr key={member.id} className="hover:bg-slate-800/40 transition">
                     <td className="px-4 py-3">
-                      <div className="font-bold text-white flex items-center gap-2">
-                        <span>{member.ign}</span>
-                        {member.joinDate && (
-                          <span className="text-[10px] text-slate-500 font-normal">
-                            (Sejak {member.joinDate})
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-400">{member.fullName}</div>
+                      <div className="font-bold text-white">{member.ign}</div>
+                      {member.fullName && <div className="text-xs text-slate-400 mt-0.5">{member.fullName}</div>}
                     </td>
                     <td className="px-4 py-3">
                       <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-200">
@@ -576,23 +582,20 @@ export default function AdminTeamsPage() {
                         <span className="text-amber-400 font-medium">Ofisial / Staf</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs font-mono text-slate-300">
-                      🇮🇩 {member.countryCode}
-                    </td>
                     <td className="px-4 py-3 text-right space-x-2">
                       <button
                         onClick={() => openEditRoster(member)}
-                        className="p-1.5 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-blue-950/40 cursor-pointer"
+                        className="inline-flex items-center justify-center p-2 rounded-lg bg-amber-500/10 hover:bg-amber-400 text-amber-400 hover:text-slate-950 border border-amber-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                         title="Edit Anggota"
                       >
-                        <Pencil size={15} />
+                        <span className="transform skew-x-12"><Pencil size={14} /></span>
                       </button>
                       <button
                         onClick={() => handleDeleteRoster(member.id)}
-                        className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 cursor-pointer"
+                        className="inline-flex items-center justify-center p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 transform -skew-x-12 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                         title="Hapus Anggota"
                       >
-                        <Trash2 size={15} />
+                        <span className="transform skew-x-12"><Trash2 size={14} /></span>
                       </button>
                     </td>
                   </tr>
@@ -606,14 +609,14 @@ export default function AdminTeamsPage() {
       {/* Modal Add / Edit Roster */}
       {rosterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="bg-[#16161e] border border-[#262936] rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+            <div className="px-6 py-4 border-b border-[#262936] flex items-center justify-between">
               <h2 className="font-bold text-lg text-white">
                 {editingRoster ? "Edit Anggota Roster" : "Tambah Anggota Roster"}
               </h2>
               <button
                 onClick={() => setRosterModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#1f222e]"
               >
                 <X size={18} />
               </button>
@@ -641,7 +644,7 @@ export default function AdminTeamsPage() {
                   value={rosterForm.ign}
                   onChange={(e) => setRosterForm({ ...rosterForm, ign: e.target.value })}
                   placeholder="Contoh: ADRExValkyrie"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500 font-bold"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 font-bold"
                 />
               </div>
 
@@ -653,7 +656,7 @@ export default function AdminTeamsPage() {
                   value={rosterForm.fullName}
                   onChange={(e) => setRosterForm({ ...rosterForm, fullName: e.target.value })}
                   placeholder="Contoh: M. Rizky Pratama"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -663,7 +666,7 @@ export default function AdminTeamsPage() {
                   <select
                     value={rosterForm.role}
                     onChange={(e) => handleRoleChange(e.target.value as any)}
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                   >
                     <optgroup label="Pemain Inti">
                       <option value="RUSHER">RUSHER</option>
@@ -684,7 +687,7 @@ export default function AdminTeamsPage() {
                   <select
                     value={rosterForm.roleType}
                     onChange={(e) => setRosterForm({ ...rosterForm, roleType: e.target.value as any })}
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                   >
                     <option value="PLAYER">Atlet (Player)</option>
                     <option value="STAFF">Staf / Ofisial</option>
@@ -701,7 +704,7 @@ export default function AdminTeamsPage() {
                     value={rosterForm.countryCode}
                     onChange={(e) => setRosterForm({ ...rosterForm, countryCode: e.target.value.toUpperCase() })}
                     placeholder="ID"
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white font-mono focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
@@ -711,7 +714,7 @@ export default function AdminTeamsPage() {
                     type="date"
                     value={rosterForm.joinDate}
                     onChange={(e) => setRosterForm({ ...rosterForm, joinDate: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                   />
                 </div>
               </div>
@@ -723,8 +726,8 @@ export default function AdminTeamsPage() {
                 </label>
 
                 {rosterForm.photoUrl ? (
-                  <div className="flex items-center gap-4 p-3.5 bg-slate-950 border border-slate-800 rounded-xl">
-                    <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0">
+                  <div className="flex items-center gap-4 p-3.5 bg-[#0f131c] border border-[#262936] rounded-xl">
+                    <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-[#16161e] border border-[#262936] shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={rosterForm.photoUrl}
@@ -740,7 +743,7 @@ export default function AdminTeamsPage() {
                         <CheckCircle size={12} /> Foto siap ditampilkan di kartu web
                       </p>
                       <div className="flex items-center gap-3 mt-2">
-                        <label className="text-xs text-blue-400 hover:text-blue-300 font-medium transition cursor-pointer">
+                        <label className="text-xs text-amber-400 hover:text-amber-300 font-medium transition cursor-pointer">
                           Ganti Foto
                           <input
                             type="file"
@@ -762,7 +765,7 @@ export default function AdminTeamsPage() {
                     </div>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-800 hover:border-red-500/60 bg-slate-950/60 hover:bg-slate-950 rounded-xl p-5 cursor-pointer transition group">
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#262936] hover:border-amber-400/60 bg-[#0f131c]/60 hover:bg-[#0f131c] rounded-xl p-5 cursor-pointer transition group">
                     <input
                       type="file"
                       accept="image/*"
@@ -770,10 +773,10 @@ export default function AdminTeamsPage() {
                       onChange={handlePhotoUpload}
                       disabled={uploadingPhoto}
                     />
-                    <div className="p-3 rounded-full bg-slate-900 text-slate-400 group-hover:text-red-400 transition mb-2">
+                    <div className="p-3 rounded-full bg-[#16161e] text-slate-400 group-hover:text-amber-400 transition mb-2">
                       <Upload size={20} />
                     </div>
-                    <span className="text-xs font-semibold text-white group-hover:text-red-400 transition">
+                    <span className="text-xs font-semibold text-white group-hover:text-amber-400 transition">
                       {uploadingPhoto ? "Sedang Mengunggah Foto..." : "Klik untuk Upload File Foto Atlet"}
                     </span>
                     <span className="text-[11px] text-slate-500 mt-1 text-center">
@@ -783,20 +786,22 @@ export default function AdminTeamsPage() {
                 )}
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-[#262936] flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setRosterModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1f222e] transition transform -skew-x-12"
                 >
-                  Batal
+                  <span className="transform skew-x-12 inline-block">Batal</span>
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-900/40 transition disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {saving ? "Menyimpan..." : editingRoster ? "Perbarui Atlet" : "Simpan Anggota"}
+                  <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic tracking-wide">
+                    {saving ? "Menyimpan..." : editingRoster ? "Perbarui Atlet" : "Simpan Anggota"}
+                  </span>
                 </button>
               </div>
             </form>
@@ -807,85 +812,33 @@ export default function AdminTeamsPage() {
       {/* Division Modal */}
       {divisionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+          <div className="relative w-full max-w-lg bg-[#16161e] border border-[#262936] rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#262936]">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <ShieldAlert className="text-red-500" size={18} />
+                <ShieldAlert className="text-amber-400" size={18} />
                 {editingDivision ? "Edit Informasi Divisi" : "Tambah Divisi Game Baru"}
               </h3>
               <button
                 onClick={() => setDivisionModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-[#1f222e] transition"
               >
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleDivisionSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nama Divisi
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Mobile Legends"
-                    value={divisionForm.name}
-                    onChange={(e) => handleDivisionNameChange(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Slug URL
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: mobile-legends"
-                    value={divisionForm.slug}
-                    onChange={(e) =>
-                      setDivisionForm({ ...divisionForm, slug: e.target.value.toLowerCase().trim() })
-                    }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-red-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Kode Singkat / Inisial
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: MLBB atau PUBGM"
-                    value={divisionForm.shortCode}
-                    onChange={(e) =>
-                      setDivisionForm({ ...divisionForm, shortCode: e.target.value.toUpperCase() })
-                    }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono uppercase focus:outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Judul Game Lengkap
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Mobile Legends: Bang Bang"
-                    value={divisionForm.gameTitle}
-                    onChange={(e) =>
-                      setDivisionForm({ ...divisionForm, gameTitle: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Nama Divisi
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Mobile Legends"
+                  value={divisionForm.name}
+                  onChange={(e) => handleDivisionNameChange(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
+                />
               </div>
 
               {/* Banner / Foto Background Upload */}
@@ -898,8 +851,8 @@ export default function AdminTeamsPage() {
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 px-4 py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-200 text-xs font-medium rounded-xl cursor-pointer transition">
-                      <Upload size={14} className="text-red-400" />
+                    <label className="flex items-center gap-2 px-4 py-2 bg-[#0f131c] hover:bg-[#1f222e] border border-[#262936] hover:border-amber-400/40 text-slate-200 text-xs font-medium rounded-xl cursor-pointer transition">
+                      <Upload size={14} className="text-amber-400" />
                       {uploadingBanner ? "Mengunggah..." : "Upload Foto Banner (2:1)"}
                       <input
                         type="file"
@@ -922,7 +875,7 @@ export default function AdminTeamsPage() {
                   </div>
 
                   {divisionForm.bannerImageUrl && (
-                    <div className="relative aspect-[2/1] max-h-48 w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+                    <div className="relative aspect-[2/1] max-h-48 w-full rounded-xl overflow-hidden border border-[#262936] bg-[#0f131c]">
                       <img
                         src={divisionForm.bannerImageUrl}
                         alt="Preview Banner"
@@ -944,7 +897,7 @@ export default function AdminTeamsPage() {
                   onChange={(e) =>
                     setDivisionForm({ ...divisionForm, tagline: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -959,24 +912,26 @@ export default function AdminTeamsPage() {
                   onChange={(e) =>
                     setDivisionForm({ ...divisionForm, description: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-[#0f131c] border border-[#262936] rounded-xl text-sm text-white focus:outline-none focus:border-amber-400 leading-relaxed"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#262936]">
                 <button
                   type="button"
                   onClick={() => setDivisionModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1f222e] transition transform -skew-x-12"
                 >
-                  Batal
+                  <span className="transform skew-x-12 inline-block">Batal</span>
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-900/40 transition disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer transform -skew-x-12 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {saving ? "Menyimpan..." : editingDivision ? "Perbarui Divisi" : "Simpan Divisi"}
+                  <span className="inline-flex items-center gap-1.5 transform skew-x-12 font-bold italic tracking-wide">
+                    {saving ? "Menyimpan..." : editingDivision ? "Perbarui Divisi" : "Simpan Divisi"}
+                  </span>
                 </button>
               </div>
             </form>
